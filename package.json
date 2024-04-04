@@ -1,0 +1,71 @@
+{
+  "name": "@lexjs/open-browser",
+  "version": "1.0.0",
+  "description": "Node.js library for making browser web queries",
+  "type": "module",
+  "scripts": {
+    "prebuild": "rm -fr ./dist",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Lex Borisoff <lex@borisoff.dev>",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "types": "./dist/types/main.d.ts",
+      "default": "./dist/main.js"
+    },
+    "./urls": {
+      "types": "./dist/types/urls.d.ts",
+      "default": "./dist/urls.js"
+    },
+    "./options": {
+      "types": "./dist/types/options.d.ts",
+      "default": "./dist/options.js"
+    }
+  },
+  "types": "./dist/types/main.d.ts",
+  "main": "./dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "open": "^9.1.0",
+    "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.17.6",
+    "@types/yargs": "^17.0.24",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-prettier": "^3.4.1",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LexBorisoff/open-browser.git"
+  },
+  "homepage": "https://github.com/LexBorisoff/open-browser#readme",
+  "bugs": {
+    "url": "https://github.com/LexBorisoff/open-browser/issues"
+  },
+  "keywords": [
+    "cli",
+    "search",
+    "websearch",
+    "web-search",
+    "search-engine",
+    "browser-query",
+    "web-query",
+    "browser",
+    "google"
+  ]
+}
