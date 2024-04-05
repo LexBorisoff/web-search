@@ -15,17 +15,15 @@
       "types": "./dist/types/main.d.ts",
       "default": "./dist/main.js"
     },
-    "./urls": {
-      "types": "./dist/types/urls.d.ts",
-      "default": "./dist/urls.js"
+    "./engine": {
+      "types": "./dist/types/engine.d.ts",
+      "default": "./dist/engine.js"
     },
-    "./options": {
-      "types": "./dist/types/options.d.ts",
-      "default": "./dist/options.js"
+    "./browser": {
+      "types": "./dist/types/browser.d.ts",
+      "default": "./dist/browser.js"
     }
   },
-  "types": "./dist/types/main.d.ts",
-  "main": "./dist/main.js",
   "files": [
     "dist"
   ],
@@ -58,14 +56,17 @@
     "url": "https://github.com/LexBorisoff/open-browser/issues"
   },
   "keywords": [
-    "cli",
     "search",
     "websearch",
     "web-search",
     "search-engine",
     "browser-query",
+    "open-browser",
     "web-query",
     "browser",
-    "google"
+    "firefox",
+    "chrome",
+    "google",
+    "edge"
   ]
 }
