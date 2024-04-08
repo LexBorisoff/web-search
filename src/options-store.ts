@@ -1,12 +1,9 @@
-import { Browser } from './browser.js';
 import { Engine } from './engine.js';
 
-type BrowserType = Browser | string;
 type EngineType = Engine | string;
 
-export interface SearchOptionsProps {
-  keywords?: string | number | (string | number)[];
-  browser?: BrowserType | BrowserType[] | null;
+export interface SearchOptions {
+  query?: string | number | (string | number)[];
   engine?: EngineType | EngineType[] | null;
   defaultEngine?: Engine | null;
   route?: string | string[];
@@ -16,26 +13,30 @@ export interface SearchOptionsProps {
   http?: boolean;
 }
 
-export class SearchOptions {
-  constructor(private readonly searchOptions: SearchOptionsProps = {}) {}
+export class OptionsStore {
+  constructor(private readonly searchOptions: SearchOptions = {}) {}
 
   protected get keywords(): string[] {
-    const { keywords } = this.searchOptions;
-    if (keywords == null) {
+    function getKeywordsArray(keyword: string): string[] {
+      return keyword.split(' ').filter((token) => token.length > 0);
+    }
+
+    const { query } = this.searchOptions;
+    if (query == null) {
       return [];
     }
 
-    if (typeof keywords === 'string') {
-      return this.parseKeywordString(keywords);
+    if (typeof query === 'string') {
+      return getKeywordsArray(query);
     }
 
-    if (typeof keywords === 'number') {
-      return [`${keywords}`];
+    if (typeof query === 'number') {
+      return [`${query}`];
     }
 
-    return keywords.reduce<string[]>((result, keyword) => {
+    return query.reduce<string[]>((result, keyword) => {
       if (typeof keyword === 'string') {
-        return [...result, ...this.parseKeywordString(keyword)];
+        return [...result, ...getKeywordsArray(keyword)];
       }
 
       if (typeof keyword === 'number') {
@@ -44,14 +45,6 @@ export class SearchOptions {
 
       return result;
     }, []);
-  }
-
-  private parseKeywordString(keyword: string): string[] {
-    return keyword.split(' ').filter((token) => token.length > 0);
-  }
-
-  protected get browser(): BrowserType | BrowserType[] | null | undefined {
-    return this.searchOptions.browser;
   }
 
   protected get engine():

@@ -1,7 +1,7 @@
 {
   "name": "@lexjs/open-browser",
   "version": "1.0.0",
-  "description": "Node.js library for making browser web queries",
+  "description": "Node.js library for making browser search queries",
   "type": "module",
   "scripts": {
     "prebuild": "rm -fr ./dist",

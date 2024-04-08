@@ -1,19 +1,26 @@
 import open, { openApp, apps } from 'open';
-import { Urls } from './urls.js';
 import { Browser } from './browser.js';
+import { Urls } from './urls.js';
 
-export default class Queries extends Urls {
-  public open(): void {
+type BrowserType = Browser | string;
+
+export default class BrowserSearch extends Urls {
+  /**
+   * Opens the constructed search query/queries, if any,
+   * in the provided browser or the default system browser
+   */
+  public openBrowser(browser?: BrowserType | BrowserType[]): void {
     let browserList: (Browser | string)[] = [];
-    if (this.browser != null) {
-      browserList = Array.isArray(this.browser) ? this.browser : [this.browser];
+    if (browser != null) {
+      browserList = Array.isArray(browser) ? browser : [browser];
     }
 
     // browser(s) provided in args
     if (browserList.length > 0) {
-      browserList.forEach((browser) => {
-        this.openBrowser(browser);
+      browserList.forEach((item) => {
+        this.__openBrowser(item);
       });
+
       return;
     }
 
@@ -25,7 +32,7 @@ export default class Queries extends Urls {
     }
   }
 
-  private openBrowser(browser: Browser | string) {
+  private __openBrowser(browser: Browser | string) {
     const browserName = typeof browser === 'string' ? browser : browser.name;
     const browserAppName = this.getBrowserAppName(browserName);
     let profiles: string[] = [];
@@ -50,7 +57,7 @@ export default class Queries extends Urls {
           handler(browserArguments);
         });
       } else {
-        const browserArguments = this.getBrowserArguments(browserName);
+        const browserArguments = this.getBrowserArguments(browserName, null);
         handler(browserArguments);
       }
     };

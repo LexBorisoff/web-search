@@ -1,4 +1,4 @@
-import { SearchOptions, type SearchOptionsProps } from './search-options.js';
+import { OptionsStore, type SearchOptions } from './options-store.js';
 import { Engine } from './engine.js';
 import { removeLeadingSlash } from './utils/remove-leading-slash.js';
 import { addTrailingSlash } from './utils/add-trailing-slash.js';
@@ -12,7 +12,7 @@ const defaultEngine = new Engine('google.com', {
   query: 'search?q=',
 });
 
-export class Urls extends SearchOptions {
+export class Urls extends OptionsStore {
   /**
    * A list of constructed URLs
    */
@@ -23,16 +23,16 @@ export class Urls extends SearchOptions {
    * If keywords are supplied, these engine cannot search them
    */
   public get noQueryEngines(): string[] {
-    return this.__noQueryEngines__;
+    return this.__noQueryEngines;
   }
-  private readonly __noQueryEngines__: string[] = [];
+  private readonly __noQueryEngines: string[] = [];
   private addNoQueryEngine(engine: string) {
-    if (!this.__noQueryEngines__.includes(engine)) {
-      this.__noQueryEngines__.push(engine);
+    if (!this.__noQueryEngines.includes(engine)) {
+      this.__noQueryEngines.push(engine);
     }
   }
 
-  constructor(options: SearchOptionsProps) {
+  constructor(options: SearchOptions = {}) {
     super(options);
     this.urls = this.getUrls();
   }
