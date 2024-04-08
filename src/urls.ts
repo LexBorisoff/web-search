@@ -209,9 +209,9 @@ export class Urls extends OptionsStore {
   private handleProtocol(urls?: string[]): string[] {
     return (urls ?? []).map((url) => {
       const hasProtocol = /^https?:\/\//is.test(url);
-      const protocol = `http${this.http === true ? '' : 's'}://`;
+      const protocol = `http${this.http ? '' : 's'}://`;
       const fullUrl = `${protocol}${removeProtocol(url)}`;
-      return new URL(this.http != null || !hasProtocol ? fullUrl : url).href;
+      return new URL(hasProtocol ? url : fullUrl).href;
     });
   }
 

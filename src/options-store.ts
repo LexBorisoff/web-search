@@ -47,25 +47,19 @@ export class OptionsStore {
     }, []);
   }
 
-  protected get engine():
-    | EngineType
-    | EngineType[]
-    | string
-    | string[]
-    | null
-    | undefined {
+  protected get engine(): SearchOptions['engine'] {
     return this.searchOptions.engine;
   }
 
-  protected get defaultEngine(): EngineType | undefined | null {
+  protected get defaultEngine(): SearchOptions['defaultEngine'] {
     return this.searchOptions.defaultEngine;
   }
 
-  protected get route(): string | string[] | undefined {
+  protected get route(): SearchOptions['route'] {
     return this.searchOptions.route;
   }
 
-  protected get port(): number | number[] | undefined {
+  protected get port(): SearchOptions['port'] {
     const { port: portOption } = this.searchOptions;
     const list = Array.isArray(portOption) ? portOption : [portOption];
 
@@ -98,7 +92,7 @@ export class OptionsStore {
     return this.searchOptions.split ?? false;
   }
 
-  protected get http(): boolean | undefined {
-    return this.searchOptions.http;
+  protected get http(): boolean {
+    return this.searchOptions.http ?? false;
   }
 }
