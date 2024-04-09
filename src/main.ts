@@ -6,22 +6,17 @@ type BrowserType = Browser | string;
 
 export default class BrowserSearch extends Urls {
   /**
-   * Opens the constructed search query/queries, if any,
-   * in the provided browser or the default system browser
+   * Opens the constructed URLs, if any, in the
+   * provided browser(s) or the default system browser
    */
-  public openBrowser(browser?: BrowserType | BrowserType[]): void {
-    let browserList: (Browser | string)[] = [];
-    if (browser != null) {
-      browserList = Array.isArray(browser) ? browser : [browser];
-    }
-
+  public openBrowsers(...browsers: BrowserType[]): this {
     // browser(s) provided in args
-    if (browserList.length > 0) {
-      browserList.forEach((item) => {
-        this.__openBrowser(item);
+    if (browsers.length > 0) {
+      browsers.forEach((item) => {
+        this.openBrowser(item);
       });
 
-      return;
+      return this;
     }
 
     // no browser but has urls
@@ -30,15 +25,23 @@ export default class BrowserSearch extends Urls {
         open(url);
       });
     }
+
+    return this;
   }
 
-  private __openBrowser(browser: Browser | string) {
-    const browserName = typeof browser === 'string' ? browser : browser.name;
+  private openBrowser(browser: Browser | string) {
+    const browserName =
+      typeof browser === 'string' ? browser : browser.browserName;
     const browserAppName = this.getBrowserAppName(browserName);
-    let profiles: string[] = [];
 
-    const profileDirectory =
-      typeof browser === 'string' ? null : browser.profileDirectory;
+    let profiles: string[] = [];
+    const [profileDirectory, incognito] =
+      typeof browser === 'string'
+        ? [null, this.incognito]
+        : [
+            browser.browserOptions.profileDirectory,
+            browser.browserOptions.incognito ?? this.incognito,
+          ];
 
     if (profileDirectory != null) {
       profiles = Array.isArray(profileDirectory)
@@ -51,13 +54,18 @@ export default class BrowserSearch extends Urls {
         profiles.forEach((directory) => {
           const browserArguments = this.getBrowserArguments(
             browserName,
+            incognito,
             directory,
           );
 
           handler(browserArguments);
         });
       } else {
-        const browserArguments = this.getBrowserArguments(browserName, null);
+        const browserArguments = this.getBrowserArguments(
+          browserName,
+          incognito,
+          null,
+        );
         handler(browserArguments);
       }
     };
@@ -99,7 +107,8 @@ export default class BrowserSearch extends Urls {
   }
 
   private getBrowserArguments(
-    browserName?: string,
+    browserName: string,
+    incognito: boolean,
     profileDirectory: string | null = null,
   ) {
     const browserArguments: string[] = [];
@@ -108,7 +117,7 @@ export default class BrowserSearch extends Urls {
       browserArguments.push(`--profile-directory=${profileDirectory}`);
     }
 
-    if (this.incognito) {
+    if (incognito) {
       let incognitoValue = 'incognito';
 
       if (browserName === 'edge') {
