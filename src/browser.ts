@@ -1,6 +1,11 @@
+interface BrowserOptions {
+  incognito?: boolean;
+  profileDirectory?: string | string[];
+}
+
 export class Browser {
   constructor(
-    public readonly name: string,
-    public readonly profileDirectory?: string | string[],
+    public readonly browserName: string,
+    public readonly browserOptions: BrowserOptions = {},
   ) {}
 }
