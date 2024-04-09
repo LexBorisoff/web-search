@@ -1,7 +1,7 @@
 {
-  "name": "@lexjs/open-browser",
+  "name": "@lexjs/browser-search",
   "version": "1.0.0",
-  "description": "Node.js library for making browser search queries",
+  "description": "Library for creating and opening browser search queries",
   "type": "module",
   "scripts": {
     "prebuild": "rm -fr ./dist",
