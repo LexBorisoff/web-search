@@ -8,8 +8,8 @@ import type {
 } from './engine.types.js';
 
 export class Engine<
-  SearchOption extends string | SearchObject,
-  ResourceOption extends ResourceObject,
+  SearchOption extends string | SearchObject | undefined = undefined,
+  ResourceOption extends ResourceObject | undefined = undefined,
 > {
   constructor(
     private readonly baseUrl: string,
@@ -36,7 +36,7 @@ export class Engine<
 
   public navigate(
     resource: string | string[] | ResourceGetterFn<ResourceOption>,
-    config?: NavigateConfig,
+    config?: NavigateConfig<ResourceOption>,
   ) {
     if (typeof resource === 'string') {
       return;
