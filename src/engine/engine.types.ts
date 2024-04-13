@@ -32,32 +32,35 @@ export type ResourceGetterFn<R extends ResourceConfig> = (
 ) => string | string[];
 
 export interface SharedConfig {
+  /**
+   * Port number to be used.
+   *
+   * - If array if provided, then each value creates a separate URL
+   * with that `port`
+   */
   port?: number | number[];
 }
 
 export interface SearchMethodOptions<S extends SearchConfig>
   extends SharedConfig {
   /**
-   * String that's placed before the search keywords.
+   * String that represents a URL segment that's placed before
+   * the search keywords and allows to ***search*** the engine.
    *
-   * - If array is provided, then each string creates a separate URL
+   * - If array is provided, then each value creates a separate URL
    * with keywords provided to that `query`
    *
-   * For example, for Google, the value is `search?q=`
+   * For example, the value for Google is `search?q=`
    * as seen in the following sample URL:
    *
    * `https://google.com/search?q=keywords`
+   *
    */
   query?: string | string[] | QueryGetterFn<S>;
   /**
    * Creates a separate URL for each keyword in the search query
    */
   splitSearchQuery?: boolean;
-  /**
-   * Places search keywords immediately after the engine's
-   * base URL instead of using the `query` property
-   */
-  useBaseUrl?: boolean;
   /**
    * Uses unsecure `http://` protocol
    */
@@ -69,7 +72,7 @@ export interface NavigateMethodOptions<R extends ResourceConfig>
   /**
    * String that represents a directory within the resource.
    *
-   * - If array is provided, then each string creates a separate URL
+   * - If array is provided, then each value creates a separate URL
    * for that particular `directory`
    *
    * For example, for a Github's resource like your `username`,
