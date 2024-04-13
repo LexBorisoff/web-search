@@ -35,7 +35,7 @@ export interface SharedConfig {
   /**
    * Port number to be used.
    *
-   * - If array if provided, then each value creates a separate URL
+   * - If array if provided, each value creates a separate URL
    * with that `port`
    */
   port?: number | number[];
@@ -47,7 +47,7 @@ export interface SearchMethodOptions<S extends SearchConfig>
    * String that represents a URL segment that's placed before
    * the search keywords and allows to ***search*** the engine.
    *
-   * - If array is provided, then each value creates a separate URL
+   * - If array is provided, each value creates a separate URL
    * with keywords provided to that `query`
    *
    * For example, the value for Google is `search?q=`
@@ -60,11 +60,11 @@ export interface SearchMethodOptions<S extends SearchConfig>
   /**
    * Creates a separate URL for each keyword in the search query
    */
-  splitSearchQuery?: boolean;
+  split?: boolean;
   /**
    * Uses unsecure `http://` protocol
    */
-  useUnsecureHttp?: boolean;
+  unsecureHttp?: boolean;
 }
 
 export interface NavigateMethodOptions<R extends ResourceConfig>
@@ -72,7 +72,7 @@ export interface NavigateMethodOptions<R extends ResourceConfig>
   /**
    * String that represents a directory within the resource.
    *
-   * - If array is provided, then each value creates a separate URL
+   * - If array is provided, each value creates a separate URL
    * for that particular `directory`
    *
    * For example, for a Github's resource like your `username`,

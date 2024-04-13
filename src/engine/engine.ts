@@ -30,6 +30,27 @@ export class Engine<
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   /**
+   * Creates base URLs with a protocol and a port, if provided
+   */
+  public getBaseUrls({
+    port: portValue,
+    unsecureHttp,
+  }: Pick<SearchMethodOptions<S>, 'port' | 'unsecureHttp'> = {}) {
+    if (portValue == null) {
+      return [this.getUrlWithProtocol(this.baseUrl, unsecureHttp)];
+    }
+
+    const ports = this.getUniquePorts(portValue);
+    const baseUrlsWithPorts = ports.map((port) =>
+      this.getBaseUrlWithPort(this.baseUrl, port),
+    );
+
+    return baseUrlsWithPorts.map((baseUrl) =>
+      this.getUrlWithProtocol(baseUrl, unsecureHttp),
+    );
+  }
+
+  /**
    * Creates search URLs.
    *
    * - If search value is not provided or is empty,
@@ -37,11 +58,16 @@ export class Engine<
    */
   public search(
     searchValue?: string | null,
-    { query, ...options }: SearchMethodOptions<S> = {},
+    { query, port, split, unsecureHttp }: SearchMethodOptions<S> = {},
   ): string[] {
     return searchValue == null || searchValue.trim() === ''
-      ? this.getBaseUrls(options)
-      : this.getSearchUrls(searchValue, options);
+      ? this.getBaseUrls({ port, unsecureHttp })
+      : this.getSearchUrls(searchValue, {
+          query,
+          port,
+          split,
+          unsecureHttp,
+        });
   }
 
   /**
@@ -70,27 +96,6 @@ export class Engine<
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   /**
-   * Creates base URLs with ports, if provided
-   */
-  private getBaseUrls({
-    port: portValue,
-    useUnsecureHttp,
-  }: Pick<SearchMethodOptions<S>, 'port' | 'useUnsecureHttp'>) {
-    if (portValue == null) {
-      return [this.getUrlWithProtocol(this.baseUrl, useUnsecureHttp)];
-    }
-
-    const ports = this.getUniquePorts(portValue);
-    const baseUrlsWithPorts = ports.map((port) =>
-      this.getBaseUrlWithPort(this.baseUrl, port),
-    );
-
-    return baseUrlsWithPorts.map((baseUrl) =>
-      this.getUrlWithProtocol(baseUrl, useUnsecureHttp),
-    );
-  }
-
-  /**
    * Creates final URLs with search keywords
    */
   private getSearchUrls(
@@ -98,19 +103,23 @@ export class Engine<
     {
       query,
       port,
-      splitSearchQuery,
-      useUnsecureHttp,
+      split,
+      unsecureHttp,
     }: Pick<
       SearchMethodOptions<S>,
-      'query' | 'port' | 'splitSearchQuery' | 'useUnsecureHttp'
+      'query' | 'port' | 'split' | 'unsecureHttp'
     >,
   ): string[] {
-    const keywords = this.getKeywords(searchValue);
     const queryUrls = this.getQueryUrls({
       query,
       port,
-      useUnsecureHttp,
+      unsecureHttp,
     });
+
+    if (split) {
+      const keywords = this.getKeywords(searchValue);
+      //
+    }
 
     return [];
   }
@@ -124,8 +133,8 @@ export class Engine<
   private getQueryUrls({
     query,
     port,
-    useUnsecureHttp,
-  }: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'useUnsecureHttp'>) {
+    unsecureHttp,
+  }: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'unsecureHttp'>) {
     function buildUrls(baseUrl: string, queries: string[]): string[] {
       return queries.map(
         (engineQuery) => `${baseUrl}/${removeLeadingSlash(engineQuery)}`,
@@ -142,7 +151,7 @@ export class Engine<
       queries = Array.isArray(result) ? result : [result];
     }
 
-    const baseUrls = this.getBaseUrls({ port, useUnsecureHttp });
+    const baseUrls = this.getBaseUrls({ port, unsecureHttp });
     return baseUrls.reduce<string[]>(
       (result, baseUrl) => [...result, ...buildUrls(baseUrl, queries)],
       [],
@@ -159,16 +168,12 @@ export class Engine<
       .filter((keyword) => keyword.length > 0);
   }
 
-  private hasUrlKeywordsOnly(searchValue: string) {
-    //
-  }
-
   /**
    * Creates a URL with a protocol
    */
-  private getUrlWithProtocol(url: string, useUnsecureHttp = false): string {
+  private getUrlWithProtocol(url: string, unsecureHttp = false): string {
     const hasProtocol = patterns.protocol.test(url);
-    const protocol = `http${useUnsecureHttp ? '' : 's'}://`;
+    const protocol = `http${unsecureHttp ? '' : 's'}://`;
     const fullUrl = `${protocol}${removeProtocol(url)}`;
     return new URL(hasProtocol ? url : fullUrl).href;
   }
