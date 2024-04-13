@@ -3,4 +3,5 @@ export const patterns = {
   port: /:(\d{1,5})/,
   protocol: /^https?:\/\//,
   leadingSlash: /^\//,
+  trailingSlash: /\/$/,
 };

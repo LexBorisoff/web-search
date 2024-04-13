@@ -1,5 +1,5 @@
-const trailingSlash = /\/$/;
+import { patterns } from './patterns.js';
 
 export function addTrailingSlash(value: string): string {
-  return trailingSlash.test(value) ? value : `${value}/`;
+  return patterns.trailingSlash.test(value) ? value : `${value}/`;
 }
