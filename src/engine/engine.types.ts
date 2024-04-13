@@ -37,11 +37,14 @@ export interface SearchConfig<
 > extends SharedConfig {
   /**
    * String that's placed before the search keywords.
-   * For example, for Google, the value is `search?q=`
-   * (`http://google.com/search?q=keyword`).
    *
-   * If array is provided, then each string creates a separate URL
-   * with keywords used against that `query`
+   * - If array is provided, then each string creates a separate URL
+   * with keywords provided to that `query`
+   *
+   * For example, for Google, the value is `search?q=`
+   * as seen in the following sample URL:
+   *
+   * `https://google.com/search?q=keywords`
    */
   query?: string | string[] | QueryGetterFn<SearchOption>;
   /**
@@ -62,5 +65,20 @@ export interface SearchConfig<
 export interface NavigateConfig<
   ResourceOption extends ResourceObject | undefined,
 > extends SharedConfig {
+  /**
+   * String that represents a directory within the resource.
+   *
+   * - If array is provided, then each string creates a separate URL
+   * for that particular `directory`
+   *
+   * For example, for a Github's resource like your `username`,
+   * a directory `my-project` will create the following URL:
+   * `https://github.com/username/my-project`
+   *
+   * - Directory can include forward-slashes to specify a deeper level
+   * of access within the resource's directory structure,
+   * e.g. a value `my-project/tree/dev/src` will create
+   * `https://github.com/username/my-project/tree/dev/src`
+   */
   directory?: string | string[] | ResourceGetterFn<ResourceOption>;
 }
