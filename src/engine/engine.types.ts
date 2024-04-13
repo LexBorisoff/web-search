@@ -36,5 +36,5 @@ export interface SearchConfig<SearchOption extends string | SearchObject>
 }
 
 export interface NavigateConfig extends SharedConfig {
-  path?: string | string[];
+  directory?: string | string[];
 }
