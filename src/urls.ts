@@ -4,7 +4,7 @@ import { removeLeadingSlash } from './utils/remove-leading-slash.js';
 import { addTrailingSlash } from './utils/add-trailing-slash.js';
 import { removeProtocol } from './utils/remove-protocol.js';
 import { extractProtocol } from './utils/extract-protocol.js';
-import { UrlPattern } from './utils/patterns.js';
+import { patterns } from './utils/patterns.js';
 
 type EngineType = Engine | string;
 
@@ -18,41 +18,27 @@ export class Urls extends OptionsStore {
    */
   public readonly urls: string[];
 
-  /**
-   * Engines without the "query" property.
-   * If keywords are supplied, these engine cannot search them
-   */
-  public get noQueryEngines(): string[] {
-    return this.__noQueryEngines;
-  }
-  private readonly __noQueryEngines: string[] = [];
-  private addNoQueryEngine(engine: string) {
-    if (!this.__noQueryEngines.includes(engine)) {
-      this.__noQueryEngines.push(engine);
-    }
-  }
-
   constructor(options: SearchOptions = {}) {
     super(options);
     this.urls = this.getUrls();
   }
 
   private get urlKeywords(): string[] {
-    return this.keywords.filter((keyword) => UrlPattern.test(keyword));
+    return this.keywords.filter((keyword) => patterns.url.test(keyword));
   }
 
   private get nonUrlKeywords(): string[] {
-    return this.keywords.filter((keyword) => !UrlPattern.test(keyword));
+    return this.keywords.filter((keyword) => !patterns.url.test(keyword));
   }
 
   private get withKeywords(): boolean {
-    return this.keywords.some((keyword) => !UrlPattern.test(keyword));
+    return this.keywords.some((keyword) => !patterns.url.test(keyword));
   }
 
   private get withUrlsOnly(): boolean {
     return (
       this.keywords.length > 0 &&
-      this.keywords.every((keyword) => UrlPattern.test(keyword))
+      this.keywords.every((keyword) => patterns.url.test(keyword))
     );
   }
 
@@ -148,12 +134,11 @@ export class Urls extends OptionsStore {
    * (if --port option was provided), and without the protocol
    */
   private handlePort(baseUrl: string): string[] {
-    const portPattern = /:(\d{1,5})/;
     const protocol: string = extractProtocol(baseUrl) ?? '';
     const noProtocolUrl: string = removeProtocol(baseUrl);
 
     function hasPort(): boolean {
-      return portPattern.test(baseUrl);
+      return patterns.port.test(baseUrl);
     }
 
     /**
@@ -161,7 +146,7 @@ export class Urls extends OptionsStore {
      */
     function getFullUrl(port: number): string {
       // provided URL includes a port
-      const matches = noProtocolUrl.match(portPattern);
+      const matches = noProtocolUrl.match(patterns.port);
       if (matches != null) {
         const [, urlPort] = matches;
 
@@ -228,10 +213,6 @@ export class Urls extends OptionsStore {
 
     if (this.split) {
       if (typeof engine !== 'string' && engine.query == null) {
-        if (values.length > 0) {
-          this.addNoQueryEngine(engine.name ?? engine.baseUrl);
-        }
-
         return this.getEngineBaseUrls(engine);
       }
 
@@ -347,7 +328,6 @@ export class Urls extends OptionsStore {
       return baseUrls.map((url) => url + queryString + queryValues);
     }
 
-    this.addNoQueryEngine(engine.name ?? engine.baseUrl);
     return baseUrls;
   }
 
