@@ -1,5 +1,5 @@
-const leadingSlash = /^\//;
+import { patterns } from './patterns.js';
 
 export function removeLeadingSlash(value: string): string {
-  return leadingSlash.test(value) ? value.substring(1) : value;
+  return patterns.leadingSlash.test(value) ? value.substring(1) : value;
 }
