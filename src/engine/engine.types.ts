@@ -30,14 +30,33 @@ export type ResourceGetterFn<
 
 export interface SharedConfig {
   port?: number | number[];
-  split?: boolean;
 }
 
 export interface SearchConfig<
   SearchOption extends string | SearchObject | undefined,
 > extends SharedConfig {
+  /**
+   * String that's placed before the search keywords.
+   * For example, for Google, the value is `search?q=`
+   * (`http://google.com/search?q=keyword`).
+   *
+   * If array is provided, then each string creates a separate URL
+   * with keywords used against that `query`
+   */
   query?: string | string[] | QueryGetterFn<SearchOption>;
-  unsecureHttp?: boolean;
+  /**
+   * Creates a separate URL for each keyword in the search query
+   */
+  splitSearchQuery?: boolean;
+  /**
+   * Places search keywords immediately after the engine's
+   * base URL instead of using the `query` property
+   */
+  useBaseUrl?: boolean;
+  /**
+   * Uses unsecure `http://` protocol
+   */
+  useUnsecureHttp?: boolean;
 }
 
 export interface NavigateConfig<
