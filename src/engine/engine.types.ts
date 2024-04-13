@@ -11,30 +11,32 @@ export interface ResourceObject {
   [key: string]: string | StringObject;
 }
 
-export interface EngineOptions<
-  SearchOption extends string | SearchObject | undefined,
-  ResourceOption extends string | ResourceObject | undefined,
+export type SearchConfig = string | SearchObject | undefined;
+export type ResourceConfig = ResourceObject | undefined;
+
+export interface EngineConfig<
+  S extends SearchConfig,
+  R extends ResourceConfig,
 > {
-  search?: SearchOption;
-  resources?: ResourceOption;
+  search?: S;
+  resources?: R;
   delimiter?: string;
 }
 
-export type QueryGetterFn<
-  SearchOption extends string | SearchObject | undefined,
-> = (search: SearchOption) => string | string[];
+export type QueryGetterFn<S extends SearchConfig> = (
+  search: S,
+) => string | string[];
 
-export type ResourceGetterFn<
-  ResourceOption extends ResourceObject | undefined,
-> = (resource: ResourceOption) => string | string[];
+export type ResourceGetterFn<R extends ResourceConfig> = (
+  resource: R,
+) => string | string[];
 
 export interface SharedConfig {
   port?: number | number[];
 }
 
-export interface SearchConfig<
-  SearchOption extends string | SearchObject | undefined,
-> extends SharedConfig {
+export interface SearchMethodOptions<S extends SearchConfig>
+  extends SharedConfig {
   /**
    * String that's placed before the search keywords.
    *
@@ -46,7 +48,7 @@ export interface SearchConfig<
    *
    * `https://google.com/search?q=keywords`
    */
-  query?: string | string[] | QueryGetterFn<SearchOption>;
+  query?: string | string[] | QueryGetterFn<S>;
   /**
    * Creates a separate URL for each keyword in the search query
    */
@@ -62,9 +64,8 @@ export interface SearchConfig<
   useUnsecureHttp?: boolean;
 }
 
-export interface NavigateConfig<
-  ResourceOption extends ResourceObject | undefined,
-> extends SharedConfig {
+export interface NavigateMethodOptions<R extends ResourceConfig>
+  extends SharedConfig {
   /**
    * String that represents a directory within the resource.
    *
@@ -80,5 +81,5 @@ export interface NavigateConfig<
    * e.g. a value `my-project/tree/dev/src` will create
    * `https://github.com/username/my-project/tree/dev/src`
    */
-  directory?: string | string[] | ResourceGetterFn<ResourceOption>;
+  directory?: string | string[] | ResourceGetterFn<R>;
 }
