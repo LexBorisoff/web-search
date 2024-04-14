@@ -1,7 +1,6 @@
 import { OptionsStore, type SearchOptions } from './options-store.js';
 import { Engine } from './engine.js';
-import { removeLeadingSlash } from './utils/remove-leading-slash.js';
-import { addTrailingSlash } from './utils/add-trailing-slash.js';
+import { slash } from './utils/slash.js';
 import { removeProtocol } from './utils/remove-protocol.js';
 import { extractProtocol } from './utils/extract-protocol.js';
 import { patterns } from './utils/patterns.js';
@@ -240,7 +239,7 @@ export class Urls extends OptionsStore {
       const keywords = useNonUrlKeywords ? this.nonUrlKeywords : this.keywords;
       if (keywords.length > 0) {
         return keywords.map(
-          (keyword) => addTrailingSlash(urlWithRoute) + keyword,
+          (keyword) => slash.trailing.add(urlWithRoute) + keyword,
         );
       }
       return [urlWithRoute];
@@ -251,7 +250,7 @@ export class Urls extends OptionsStore {
       return this.route.reduce<string[]>(
         (result, route) => [
           ...result,
-          ...handleKeywords(addTrailingSlash(url) + route),
+          ...handleKeywords(slash.trailing.add(url) + route),
         ],
         [],
       );
@@ -259,7 +258,7 @@ export class Urls extends OptionsStore {
 
     // single route
     if (this.route != null) {
-      return handleKeywords(addTrailingSlash(url) + this.route);
+      return handleKeywords(slash.trailing.add(url) + this.route);
     }
 
     // no routes
@@ -277,7 +276,7 @@ export class Urls extends OptionsStore {
       const engineRoutes = this.getEngineRouteUrls(engine, route);
       return engineRoutes.map((engineRoute) =>
         value != null
-          ? addTrailingSlash(engineRoute) + value.toString()
+          ? slash.trailing.add(engineRoute) + value.toString()
           : engineRoute,
       );
     };
@@ -303,7 +302,7 @@ export class Urls extends OptionsStore {
    */
   private getEngineBaseUrls(engine: EngineType): string[] {
     const engineUrl = typeof engine === 'string' ? engine : engine.baseUrl;
-    return this.handlePort(engineUrl).map((url) => addTrailingSlash(url));
+    return this.handlePort(engineUrl).map((url) => slash.trailing.add(url));
   }
 
   /**
@@ -318,13 +317,13 @@ export class Urls extends OptionsStore {
       const engineUrls = this.handlePort(engine);
       return engineUrls.map(
         (url) =>
-          (url.endsWith('=') ? url : addTrailingSlash(url)) + queryValues,
+          (url.endsWith('=') ? url : slash.trailing.add(url)) + queryValues,
       );
     }
 
     const baseUrls = this.getEngineBaseUrls(engine);
     if (engine.query != null) {
-      const queryString = removeLeadingSlash(engine.query);
+      const queryString = slash.leading.remove(engine.query);
       return baseUrls.map((url) => url + queryString + queryValues);
     }
 

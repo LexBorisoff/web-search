@@ -1,6 +1,5 @@
 import { patterns } from '../utils/patterns.js';
-import { removeLeadingSlash } from '../utils/remove-leading-slash.js';
-import { addTrailingSlash } from '../utils/add-trailing-slash.js';
+import { slash } from '../utils/slash.js';
 import { removeProtocol } from '../utils/remove-protocol.js';
 import { returnTypeGuard } from '../utils/return-type-guard.js';
 import { extractProtocol } from '../utils/extract-protocol.js';
@@ -102,7 +101,9 @@ export class Engine<
       (result, baseUrl) => [
         ...result,
         ...resources
-          .map((r) => `${addTrailingSlash(baseUrl)}${removeLeadingSlash(r)}`)
+          .map(
+            (r) => `${slash.trailing.add(baseUrl)}${slash.leading.remove(r)}`,
+          )
           .filter((url) => !result.includes(url)),
       ],
       [],
@@ -113,7 +114,7 @@ export class Engine<
         (result, url) => [
           ...result,
           ...directories.map(
-            (d) => `${addTrailingSlash(url)}${removeLeadingSlash(d)}`,
+            (d) => `${slash.trailing.add(url)}${slash.leading.remove(d)}`,
           ),
         ],
         [],
@@ -176,8 +177,10 @@ export class Engine<
     return this.getBaseUrls({ port, unsecureHttp }).reduce<string[]>(
       (result, baseUrl) => [
         ...result,
-        ...queries.map(
-          (q) => `${addTrailingSlash(baseUrl)}${removeLeadingSlash(q)}`,
+        ...queries.map((q) =>
+          q.startsWith('?')
+            ? ''
+            : `${slash.trailing.add(baseUrl)}${slash.leading.remove(q)}`,
         ),
       ],
       [],
