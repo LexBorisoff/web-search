@@ -10,6 +10,7 @@ import type {
   ResourceConfig,
   SearchMethodOptions,
   NavigateMethodOptions,
+  QueryGetterFn,
   ResourceGetterFn,
 } from './engine.types.js';
 
@@ -90,20 +91,11 @@ export class Engine<
     resource: string | string[] | ResourceGetterFn<R>,
     options: NavigateMethodOptions<R> = {},
   ) {
-    const { directory, port } = options;
+    const { directory, port, unsecureHttp } = options;
 
-    if (typeof resource === 'string') {
-      return;
-    }
-
-    if (Array.isArray(resource)) {
-      return;
-    }
-
-    if (resource != null && this.config?.resources != null) {
-      const result = returnTypeGuard(resource, this.config.resources);
-      return;
-    }
+    const baseUrls = this.getBaseUrls({ port, unsecureHttp });
+    const resources = this.getResources(resource);
+    const directories = this.getResources(directory);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -153,50 +145,16 @@ export class Engine<
   private getQueryUrls(
     options: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'unsecureHttp'>,
   ) {
-    const { query: queryValue, port, unsecureHttp } = options;
-
-    function buildUrls(baseUrl: string, queries: string[]): string[] {
-      return queries.map(
-        (query) => `${addTrailingSlash(baseUrl)}${removeLeadingSlash(query)}`,
-      );
-    }
-
-    // fallback the engine's query to its root (base url)
-    let defaultQuery = '';
-
-    // set the default query to the engine config's main value, if it exists
-    const { search } = this.config ?? {};
-    if (search != null) {
-      if (typeof search === 'string') {
-        defaultQuery = search;
-      } else if (search instanceof Object && 'main' in search) {
-        defaultQuery = search.main;
-      }
-    }
-
-    let queries = [defaultQuery];
-
-    // set current search's queries to the provided option
-    if (typeof queryValue === 'string') {
-      queries = [queryValue];
-    } else if (
-      Array.isArray(queryValue) &&
-      queryValue.every((query): query is string => typeof query === 'string')
-    ) {
-      queries = queryValue;
-    } else if (
-      queryValue != null &&
-      queryValue instanceof Function &&
-      search != null
-    ) {
-      const query = returnTypeGuard(queryValue, search);
-      if (query != null) {
-        queries = Array.isArray(query) ? query : [query];
-      }
-    }
+    const { query, port, unsecureHttp } = options;
+    const queries = this.getQueries(query);
 
     return this.getBaseUrls({ port, unsecureHttp }).reduce<string[]>(
-      (result, baseUrl) => [...result, ...buildUrls(baseUrl, queries)],
+      (result, baseUrl) => [
+        ...result,
+        ...queries.map(
+          (q) => `${addTrailingSlash(baseUrl)}${removeLeadingSlash(q)}`,
+        ),
+      ],
       [],
     );
   }
@@ -266,6 +224,84 @@ export class Engine<
     return hasPort() && urlWithPort !== url
       ? [url, urlWithPort]
       : [urlWithPort];
+  }
+
+  /**
+   * Returns an array of `query` values provided for the current `search` call
+   *
+   * - If `query` is not provided or is invalid, defaults to the engine's
+   * main `search` value
+   *
+   * - If the engine does not have a main `search` value, default to the
+   * engine's root (effectively querying the base url)
+   */
+  private getQueries(query: string | string[] | QueryGetterFn<S> | undefined) {
+    // set current search's queries to the provided option
+    if (typeof query === 'string') {
+      return [query];
+    }
+
+    if (
+      Array.isArray(query) &&
+      query.every((q): q is string => typeof q === 'string')
+    ) {
+      return query;
+    }
+
+    const { search: configSearch } = this.config ?? {};
+    if (query != null && query instanceof Function && configSearch != null) {
+      const result = returnTypeGuard(query, configSearch);
+      if (result != null) {
+        return Array.isArray(result) ? result : [result];
+      }
+    }
+
+    // fallback the engine's query to its root (base url)
+    let defaultQuery = '/';
+
+    // set the default query to the engine config's main value, if it exists
+    if (configSearch != null) {
+      if (typeof configSearch === 'string') {
+        defaultQuery = configSearch;
+      } else if (configSearch instanceof Object && 'main' in configSearch) {
+        defaultQuery = configSearch.main;
+      }
+    }
+
+    return [defaultQuery];
+  }
+
+  /**
+   * Returns an array of resources for the current `navigate` call.
+   *
+   * - If resource is not provided, returns an empty array
+   */
+  private getResources(
+    resource: string | string[] | ResourceGetterFn<R> | undefined,
+  ): string[] {
+    if (typeof resource === 'string') {
+      return [resource];
+    }
+
+    if (
+      Array.isArray(resource) &&
+      resource.every((r): r is string => typeof r === 'string')
+    ) {
+      return resource;
+    }
+
+    if (
+      resource != null &&
+      resource instanceof Function &&
+      this.config?.resources != null
+    ) {
+      const result = returnTypeGuard(resource, this.config.resources);
+      if (result != null) {
+        return Array.isArray(result) ? result : [result];
+      }
+    }
+
+    return [];
   }
 
   private getUniquePorts(ports: number | number[]): number[] {

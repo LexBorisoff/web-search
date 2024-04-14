@@ -31,7 +31,7 @@ export type ResourceGetterFn<R extends ResourceConfig> = (
   resource: R,
 ) => string | string[];
 
-export interface SharedConfig {
+export interface SharedOptions {
   /**
    * Port number to be used.
    *
@@ -39,10 +39,14 @@ export interface SharedConfig {
    * with that `port`
    */
   port?: number | number[];
+  /**
+   * Uses unsecure `http://` protocol
+   */
+  unsecureHttp?: boolean;
 }
 
 export interface SearchMethodOptions<S extends SearchConfig>
-  extends SharedConfig {
+  extends SharedOptions {
   /**
    * String that represents a URL segment that's placed before
    * the search keywords and allows to ***search*** the engine.
@@ -61,14 +65,10 @@ export interface SearchMethodOptions<S extends SearchConfig>
    * Creates a separate URL for each keyword in the search query
    */
   split?: boolean;
-  /**
-   * Uses unsecure `http://` protocol
-   */
-  unsecureHttp?: boolean;
 }
 
 export interface NavigateMethodOptions<R extends ResourceConfig>
-  extends SharedConfig {
+  extends SharedOptions {
   /**
    * String that represents a directory within the resource.
    *
