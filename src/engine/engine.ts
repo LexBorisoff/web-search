@@ -8,7 +8,7 @@ import type {
   SearchConfig,
   ResourceConfig,
   SearchMethodOptions,
-  NavigateMethodOptions,
+  ResourceMethodOptions,
   QueryGetterFn,
   ResourceGetterFn,
 } from './engine.types.js';
@@ -90,41 +90,45 @@ export class Engine<
   /**
    * Creates URLs for the provided resource
    */
-  public navigate(
-    resource: string | string[] | ResourceGetterFn<R>,
-    options: NavigateMethodOptions<R> = {},
+  public resource(
+    resourceValue: string | string[] | ResourceGetterFn<R>,
+    options: ResourceMethodOptions<R> = {},
   ) {
-    const { directory, port, unsecureHttp } = options;
+    const { path: pathValue, port, unsecureHttp } = options;
 
     const baseUrls = this.getBaseUrls({ port, unsecureHttp });
-    const resources = this.getResourceValues(resource);
-    const directories = this.getResourceValues(directory);
+    const resources = this.getResourceValues(resourceValue);
+    const paths = this.getResourceValues(pathValue);
 
-    const navigateUrls = baseUrls.reduce<string[]>(
+    const resourceUrls = baseUrls.reduce<string[]>(
       (result, baseUrl) => [
         ...result,
         ...resources
           .map(
-            (r) => `${slash.trailing.add(baseUrl)}${slash.leading.remove(r)}`,
+            (resource) =>
+              slash.trailing.add(baseUrl) + slash.leading.remove(resource),
           )
           .filter((url) => !result.includes(url)),
       ],
       [],
     );
 
-    if (directories.length > 0) {
-      return navigateUrls.reduce<string[]>(
+    if (paths.length > 0) {
+      return resourceUrls.reduce<string[]>(
         (result, url) => [
           ...result,
-          ...directories.map(
-            (d) => `${slash.trailing.add(url)}${slash.leading.remove(d)}`,
+          ...paths.map(
+            (path) =>
+              (path.startsWith('?')
+                ? slash.trailing.remove(url)
+                : slash.trailing.add(url)) + slash.leading.remove(path),
           ),
         ],
         [],
       );
     }
 
-    return navigateUrls;
+    return resourceUrls;
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -315,7 +319,7 @@ export class Engine<
   }
 
   /**
-   * Returns an array of resources for the current `navigate` call.
+   * Returns an array of resources for the current `resource` call.
    *
    * - If resource is not provided or is invalid, returns an empty array
    */

@@ -67,22 +67,46 @@ export interface SearchMethodOptions<S extends SearchConfig>
   split?: boolean;
 }
 
-export interface NavigateMethodOptions<R extends ResourceConfig>
+export interface ResourceMethodOptions<R extends ResourceConfig>
   extends SharedOptions {
   /**
-   * String that represents a directory within the resource.
+   * String that represents a deeper path within the resource.
    *
    * - If array is provided, each value creates a separate URL
-   * for that particular `directory`
+   * for that particular `path`
    *
    * For example, for a Github's resource like your `username`,
-   * a directory `my-project` will create the following URL:
+   * a path `my-project` will create the following URL:
    * `https://github.com/username/my-project`
    *
-   * - Directory can include forward-slashes to specify a deeper level
-   * of access within the resource's directory structure,
+   * - Path can include forward-slashes to specify a deeper level
+   * of access within the resource's structure,
    * e.g. a value `my-project/tree/dev/src` will create
    * `https://github.com/username/my-project/tree/dev/src`
+   *
+   * - If path starts with `?`, it is added to the resource as is
+   * without being separated by `/`
+   *
+   * @example
+   * const github = new Engine('github.com', {
+   *   resources: {
+   *     profile: 'username',
+   *     tabs: {
+   *       repos: '?tab=repositories',
+   *       stars: '?tab=stars'
+   *     }
+   *   }
+   * });
+   *
+   * const urls = github.resource(({ profile }) => profile, {
+   *   path: ({ tabs }) => [tabs.repos, tabs.stars],
+   * });
+   *
+   * console.log(urls);
+   * // Expected array with URLs:
+   * // https://github.com/username?tab=repositories
+   * // https://github.com/username?tab=stars
+   *
    */
-  directory?: string | string[] | ResourceGetterFn<R>;
+  path?: string | string[] | ResourceGetterFn<R>;
 }
