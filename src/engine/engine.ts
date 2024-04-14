@@ -3,6 +3,7 @@ import { removeLeadingSlash } from '../utils/remove-leading-slash.js';
 import { addTrailingSlash } from '../utils/add-trailing-slash.js';
 import { removeProtocol } from '../utils/remove-protocol.js';
 import { returnTypeGuard } from '../utils/return-type-guard.js';
+import { extractProtocol } from '../utils/extract-protocol.js';
 import type {
   EngineConfig,
   SearchConfig,
@@ -45,8 +46,17 @@ export class Engine<
       ];
     }
 
-    return this.getUniquePorts(portValue)
-      .map((port) => this.getUrlWithPort(this.baseUrl, port))
+    const urlsWithPort = this.getUniquePorts(portValue).reduce<string[]>(
+      (result, port) => [
+        ...result,
+        ...this.getUrlWithPort(this.baseUrl, port).filter(
+          (url) => !result.includes(url),
+        ),
+      ],
+      [],
+    );
+
+    return urlsWithPort
       .map((url) => this.getUrlWithProtocol(url, unsecureHttp))
       .map((url) => this.getHref(url));
   }
@@ -212,11 +222,50 @@ export class Engine<
 
   /**
    * Creates a URL with a port
-   *
-   * TODO: implement
    */
-  private getUrlWithPort(url: string, port: number): string {
-    return url;
+  private getUrlWithPort(url: string, port: number): string[] {
+    const protocol = extractProtocol(url) ?? '';
+    const noProtocolUrl = removeProtocol(url);
+
+    function hasPort() {
+      return patterns.port.test(url);
+    }
+
+    function buildUrl() {
+      const matches = noProtocolUrl.match(patterns.port);
+
+      // provided URL includes a port
+      if (matches != null) {
+        const [, currentPort] = matches;
+        const colon = ':';
+        const i = noProtocolUrl.indexOf(colon);
+
+        // provided port is not part of the url
+        if (currentPort !== port.toString() && i >= 0) {
+          const beforePort = noProtocolUrl.substring(0, i);
+          const afterPort = noProtocolUrl.substring(
+            i + colon.length + currentPort.length,
+          );
+
+          return `${protocol}${beforePort}:${port}${afterPort}`;
+        }
+
+        // provided port is already part of the url
+        return url;
+      }
+
+      // provided URL does not include a port
+      const i = noProtocolUrl.indexOf('/');
+      const host = i > 0 ? noProtocolUrl.substring(0, i) : noProtocolUrl;
+      const path = i > 0 ? noProtocolUrl.substring(i) : '';
+
+      return `${protocol}${host}:${port}${path}`;
+    }
+
+    const urlWithPort = buildUrl();
+    return hasPort() && urlWithPort !== url
+      ? [url, urlWithPort]
+      : [urlWithPort];
   }
 
   private getUniquePorts(ports: number | number[]): number[] {
