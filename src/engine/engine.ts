@@ -41,24 +41,28 @@ export class Engine<
     const { port: portValue, unsecureHttp } = options;
 
     if (portValue == null) {
-      return [
-        this.getHref(this.getUrlWithProtocol(this.baseUrl, unsecureHttp)),
-      ];
+      const baseUrl = this.getUrlWithProtocol(this.baseUrl, unsecureHttp);
+      return [this.getHref(baseUrl)];
     }
 
-    const urlsWithPort = this.getUniquePorts(portValue).reduce<string[]>(
-      (result, port) => [
-        ...result,
-        ...this.getUrlWithPort(this.baseUrl, port).filter(
-          (url) => !result.includes(url),
-        ),
-      ],
-      [],
-    );
+    const ports = this.getUniquePorts(portValue);
 
-    return urlsWithPort
-      .map((url) => this.getUrlWithProtocol(url, unsecureHttp))
-      .map((url) => this.getHref(url));
+    return (
+      ports
+        // add ports
+        .reduce<string[]>(
+          (result, port) => [
+            ...result,
+            ...this.getUrlWithPort(this.baseUrl, port).filter(
+              (url) => !result.includes(url),
+            ),
+          ],
+          [],
+        )
+        // add protocol
+        .map((url) => this.getUrlWithProtocol(url, unsecureHttp))
+        .map((url) => this.getHref(url))
+    );
   }
 
   /**
@@ -92,12 +96,11 @@ export class Engine<
   ) {
     const { directory, port, unsecureHttp } = options;
 
+    const baseUrls = this.getBaseUrls({ port, unsecureHttp });
     const resources = this.getResourceValues(resource);
     const directories = this.getResourceValues(directory);
 
-    const navigateUrls = this.getBaseUrls({ port, unsecureHttp }).reduce<
-      string[]
-    >(
+    const navigateUrls = baseUrls.reduce<string[]>(
       (result, baseUrl) => [
         ...result,
         ...resources
@@ -171,16 +174,17 @@ export class Engine<
   private getQueryUrls(
     options: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'unsecureHttp'>,
   ) {
-    const { query, port, unsecureHttp } = options;
-    const queries = this.getQueryValues(query);
+    const { query: queryValue, port, unsecureHttp } = options;
+    const baseUrls = this.getBaseUrls({ port, unsecureHttp });
+    const queries = this.getQueryValues(queryValue);
 
-    return this.getBaseUrls({ port, unsecureHttp }).reduce<string[]>(
+    return baseUrls.reduce<string[]>(
       (result, baseUrl) => [
         ...result,
-        ...queries.map((q) =>
-          q.startsWith('?')
-            ? ''
-            : `${slash.trailing.add(baseUrl)}${slash.leading.remove(q)}`,
+        ...queries.map(
+          (query) =>
+            slash.trailing.add(baseUrl) +
+            (query.startsWith('?') ? query : slash.leading.remove(query)),
         ),
       ],
       [],
@@ -266,7 +270,7 @@ export class Engine<
    * - If `query` is not provided or is invalid, defaults to the engine's
    * main `search` value
    *
-   * - If the engine does not have a main `search` value, default to the
+   * - If engine does not have a main `search` value, default to the
    * engine's root (effectively querying the base url)
    */
   private getQueryValues(
