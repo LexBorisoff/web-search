@@ -1,6 +1,8 @@
 import { patterns } from '../utils/patterns.js';
 import { removeLeadingSlash } from '../utils/remove-leading-slash.js';
+import { addTrailingSlash } from '../utils/add-trailing-slash.js';
 import { removeProtocol } from '../utils/remove-protocol.js';
+import { returnTypeGuard } from '../utils/return-type-guard.js';
 import type {
   EngineConfig,
   SearchConfig,
@@ -32,22 +34,21 @@ export class Engine<
   /**
    * Creates base URLs with a protocol and a port, if provided
    */
-  public getBaseUrls({
-    port: portValue,
-    unsecureHttp,
-  }: Pick<SearchMethodOptions<S>, 'port' | 'unsecureHttp'> = {}) {
+  public getBaseUrls(
+    options: Pick<SearchMethodOptions<S>, 'port' | 'unsecureHttp'> = {},
+  ) {
+    const { port: portValue, unsecureHttp } = options;
+
     if (portValue == null) {
-      return [this.getUrlWithProtocol(this.baseUrl, unsecureHttp)];
+      return [
+        this.getHref(this.getUrlWithProtocol(this.baseUrl, unsecureHttp)),
+      ];
     }
 
-    const ports = this.getUniquePorts(portValue);
-    const baseUrlsWithPorts = ports.map((port) =>
-      this.getBaseUrlWithPort(this.baseUrl, port),
-    );
-
-    return baseUrlsWithPorts.map((baseUrl) =>
-      this.getUrlWithProtocol(baseUrl, unsecureHttp),
-    );
+    return this.getUniquePorts(portValue)
+      .map((port) => this.getUrlWithPort(this.baseUrl, port))
+      .map((url) => this.getUrlWithProtocol(url, unsecureHttp))
+      .map((url) => this.getHref(url));
   }
 
   /**
@@ -58,8 +59,10 @@ export class Engine<
    */
   public search(
     searchValue?: string | null,
-    { query, port, split, unsecureHttp }: SearchMethodOptions<S> = {},
+    options: SearchMethodOptions<S> = {},
   ): string[] {
+    const { query, port, split, unsecureHttp } = options;
+
     return searchValue == null || searchValue.trim() === ''
       ? this.getBaseUrls({ port, unsecureHttp })
       : this.getSearchUrls(searchValue, {
@@ -75,8 +78,10 @@ export class Engine<
    */
   public navigate(
     resource: string | string[] | ResourceGetterFn<R>,
-    { directory, ...config }: NavigateMethodOptions<R> = {},
+    options: NavigateMethodOptions<R> = {},
   ) {
+    const { directory, port } = options;
+
     if (typeof resource === 'string') {
       return;
     }
@@ -86,7 +91,7 @@ export class Engine<
     }
 
     if (resource != null && this.config?.resources != null) {
-      const result = resource(this.config.resources);
+      const result = returnTypeGuard(resource, this.config.resources);
       return;
     }
   }
@@ -100,16 +105,14 @@ export class Engine<
    */
   private getSearchUrls(
     searchValue: string,
-    {
-      query,
-      port,
-      split,
-      unsecureHttp,
-    }: Pick<
+    options: Pick<
       SearchMethodOptions<S>,
       'query' | 'port' | 'split' | 'unsecureHttp'
     >,
   ): string[] {
+    const { query, port, split, unsecureHttp } = options;
+
+    const keywords = this.getKeywords(searchValue);
     const queryUrls = this.getQueryUrls({
       query,
       port,
@@ -117,11 +120,18 @@ export class Engine<
     });
 
     if (split) {
-      const keywords = this.getKeywords(searchValue);
-      //
+      return keywords.reduce<string[]>(
+        (result, keyword) => [
+          ...result,
+          ...queryUrls.map((queryUrl) => this.getHref(queryUrl + keyword)),
+        ],
+        [],
+      );
     }
 
-    return [];
+    return queryUrls.map((queryUrl) =>
+      this.getHref(queryUrl + keywords.join(this._delimiter)),
+    );
   }
 
   /**
@@ -130,29 +140,52 @@ export class Engine<
    *
    * For example `https://google.com/search?q=`
    */
-  private getQueryUrls({
-    query,
-    port,
-    unsecureHttp,
-  }: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'unsecureHttp'>) {
+  private getQueryUrls(
+    options: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'unsecureHttp'>,
+  ) {
+    const { query: queryValue, port, unsecureHttp } = options;
+
     function buildUrls(baseUrl: string, queries: string[]): string[] {
       return queries.map(
-        (engineQuery) => `${baseUrl}/${removeLeadingSlash(engineQuery)}`,
+        (query) => `${addTrailingSlash(baseUrl)}${removeLeadingSlash(query)}`,
       );
     }
 
-    let queries: string[] = [];
-    if (typeof query === 'string') {
-      queries = [query];
-    } else if (Array.isArray(query)) {
-      queries = query;
-    } else if (query != null && this.config?.search != null) {
-      const result = query(this.config.search);
-      queries = Array.isArray(result) ? result : [result];
+    // fallback the engine's query to its root (base url)
+    let defaultQuery = '';
+
+    // set the default query to the engine config's main value, if it exists
+    const { search } = this.config ?? {};
+    if (search != null) {
+      if (typeof search === 'string') {
+        defaultQuery = search;
+      } else if (search instanceof Object && 'main' in search) {
+        defaultQuery = search.main;
+      }
     }
 
-    const baseUrls = this.getBaseUrls({ port, unsecureHttp });
-    return baseUrls.reduce<string[]>(
+    let queries = [defaultQuery];
+
+    // set current search's queries to the provided option
+    if (typeof queryValue === 'string') {
+      queries = [queryValue];
+    } else if (
+      Array.isArray(queryValue) &&
+      queryValue.every((query): query is string => typeof query === 'string')
+    ) {
+      queries = queryValue;
+    } else if (
+      queryValue != null &&
+      queryValue instanceof Function &&
+      search != null
+    ) {
+      const query = returnTypeGuard(queryValue, search);
+      if (query != null) {
+        queries = Array.isArray(query) ? query : [query];
+      }
+    }
+
+    return this.getBaseUrls({ port, unsecureHttp }).reduce<string[]>(
       (result, baseUrl) => [...result, ...buildUrls(baseUrl, queries)],
       [],
     );
@@ -172,18 +205,25 @@ export class Engine<
    * Creates a URL with a protocol
    */
   private getUrlWithProtocol(url: string, unsecureHttp = false): string {
-    const hasProtocol = patterns.protocol.test(url);
     const protocol = `http${unsecureHttp ? '' : 's'}://`;
-    const fullUrl = `${protocol}${removeProtocol(url)}`;
-    return new URL(hasProtocol ? url : fullUrl).href;
+    const hasProtocol = patterns.protocol.test(url);
+    return hasProtocol ? url : `${protocol}${removeProtocol(url)}`;
   }
 
-  // TODO: implement
-  private getBaseUrlWithPort(baseUrl: string, port: number): string {
-    return '';
+  /**
+   * Creates a URL with a port
+   *
+   * TODO: implement
+   */
+  private getUrlWithPort(url: string, port: number): string {
+    return url;
   }
 
   private getUniquePorts(ports: number | number[]): number[] {
     return [...new Set(Array.isArray(ports) ? ports : [ports])];
+  }
+
+  private getHref(url: string): string {
+    return new URL(url).href;
   }
 }
