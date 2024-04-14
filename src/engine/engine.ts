@@ -93,9 +93,34 @@ export class Engine<
   ) {
     const { directory, port, unsecureHttp } = options;
 
-    const baseUrls = this.getBaseUrls({ port, unsecureHttp });
-    const resources = this.getResources(resource);
-    const directories = this.getResources(directory);
+    const resources = this.getResourceValues(resource);
+    const directories = this.getResourceValues(directory);
+
+    const navigateUrls = this.getBaseUrls({ port, unsecureHttp }).reduce<
+      string[]
+    >(
+      (result, baseUrl) => [
+        ...result,
+        ...resources
+          .map((r) => `${addTrailingSlash(baseUrl)}${removeLeadingSlash(r)}`)
+          .filter((url) => !result.includes(url)),
+      ],
+      [],
+    );
+
+    if (directories.length > 0) {
+      return navigateUrls.reduce<string[]>(
+        (result, url) => [
+          ...result,
+          ...directories.map(
+            (d) => `${addTrailingSlash(url)}${removeLeadingSlash(d)}`,
+          ),
+        ],
+        [],
+      );
+    }
+
+    return navigateUrls;
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -146,7 +171,7 @@ export class Engine<
     options: Pick<SearchMethodOptions<S>, 'query' | 'port' | 'unsecureHttp'>,
   ) {
     const { query, port, unsecureHttp } = options;
-    const queries = this.getQueries(query);
+    const queries = this.getQueryValues(query);
 
     return this.getBaseUrls({ port, unsecureHttp }).reduce<string[]>(
       (result, baseUrl) => [
@@ -170,12 +195,18 @@ export class Engine<
   }
 
   /**
-   * Creates a URL with a protocol
+   * Creates a URL with a protocol.
+   *
+   * @param unsecureHttp
+   * If provided and URL string includes a protocol,
+   * the URL's protocol will be overridden
    */
-  private getUrlWithProtocol(url: string, unsecureHttp = false): string {
+  private getUrlWithProtocol(url: string, unsecureHttp?: boolean): string {
     const protocol = `http${unsecureHttp ? '' : 's'}://`;
     const hasProtocol = patterns.protocol.test(url);
-    return hasProtocol ? url : `${protocol}${removeProtocol(url)}`;
+    return hasProtocol && unsecureHttp == null
+      ? url
+      : `${protocol}${removeProtocol(url)}`;
   }
 
   /**
@@ -235,28 +266,33 @@ export class Engine<
    * - If the engine does not have a main `search` value, default to the
    * engine's root (effectively querying the base url)
    */
-  private getQueries(query: string | string[] | QueryGetterFn<S> | undefined) {
-    // set current search's queries to the provided option
-    if (typeof query === 'string') {
-      return [query];
+  private getQueryValues(
+    queryValue: string | string[] | QueryGetterFn<S> | undefined,
+  ) {
+    if (typeof queryValue === 'string') {
+      return [queryValue];
     }
 
     if (
-      Array.isArray(query) &&
-      query.every((q): q is string => typeof q === 'string')
+      Array.isArray(queryValue) &&
+      queryValue.every((query): query is string => typeof query === 'string')
     ) {
-      return query;
+      return queryValue;
     }
 
     const { search: configSearch } = this.config ?? {};
-    if (query != null && query instanceof Function && configSearch != null) {
-      const result = returnTypeGuard(query, configSearch);
+    if (
+      queryValue != null &&
+      queryValue instanceof Function &&
+      configSearch != null
+    ) {
+      const result = returnTypeGuard(queryValue, configSearch);
       if (result != null) {
         return Array.isArray(result) ? result : [result];
       }
     }
 
-    // fallback the engine's query to its root (base url)
+    // fallback query to the engine's root (base url)
     let defaultQuery = '/';
 
     // set the default query to the engine config's main value, if it exists
@@ -274,28 +310,28 @@ export class Engine<
   /**
    * Returns an array of resources for the current `navigate` call.
    *
-   * - If resource is not provided, returns an empty array
+   * - If resource is not provided or is invalid, returns an empty array
    */
-  private getResources(
-    resource: string | string[] | ResourceGetterFn<R> | undefined,
+  private getResourceValues(
+    resourceValue: string | string[] | ResourceGetterFn<R> | undefined,
   ): string[] {
-    if (typeof resource === 'string') {
-      return [resource];
+    if (typeof resourceValue === 'string') {
+      return [resourceValue];
     }
 
     if (
-      Array.isArray(resource) &&
-      resource.every((r): r is string => typeof r === 'string')
+      Array.isArray(resourceValue) &&
+      resourceValue.every((r): r is string => typeof r === 'string')
     ) {
-      return resource;
+      return resourceValue;
     }
 
     if (
-      resource != null &&
-      resource instanceof Function &&
+      resourceValue != null &&
+      resourceValue instanceof Function &&
       this.config?.resources != null
     ) {
-      const result = returnTypeGuard(resource, this.config.resources);
+      const result = returnTypeGuard(resourceValue, this.config.resources);
       if (result != null) {
         return Array.isArray(result) ? result : [result];
       }
@@ -304,10 +340,16 @@ export class Engine<
     return [];
   }
 
+  /**
+   * Returns an array of unique port numbers
+   */
   private getUniquePorts(ports: number | number[]): number[] {
     return [...new Set(Array.isArray(ports) ? ports : [ports])];
   }
 
+  /**
+   * Returns a property formatted URL string
+   */
   private getHref(url: string): string {
     return new URL(url).href;
   }
