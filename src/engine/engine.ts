@@ -119,9 +119,8 @@ export class Engine<
           ...result,
           ...paths.map(
             (path) =>
-              (path.startsWith('?')
-                ? slash.trailing.remove(url)
-                : slash.trailing.add(url)) + slash.leading.remove(path),
+              (path.startsWith('?') ? url : slash.trailing.add(url)) +
+              slash.leading.remove(path),
           ),
         ],
         [],
