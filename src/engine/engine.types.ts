@@ -24,11 +24,11 @@ export interface EngineConfig<
 }
 
 export type QueryGetterFn<S extends SearchConfig> = (
-  search: S,
+  searchConfig: S,
 ) => string | string[];
 
 export type ResourceGetterFn<R extends ResourceConfig> = (
-  resource: R,
+  resourcesConfig: R,
 ) => string | string[];
 
 export interface SharedOptions {
