@@ -1,6 +1,6 @@
 {
   "name": "@lexjs/browser-search",
-  "version": "1.0.0",
+  "version": "0.0.1-beta.9",
   "description": "Library for creating and opening browser search queries",
   "type": "module",
   "scripts": {
@@ -12,8 +12,8 @@
   "license": "ISC",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "main": "./dist/index.js",
