@@ -17,14 +17,16 @@ export class Engine<
   S extends SearchConfig = undefined,
   R extends ResourceConfig = undefined,
 > {
-  private _delimiter: string = ' ';
+  #baseUrl: string;
+  #config: EngineConfig<S, R>;
+  #delimiter: string = ' ';
 
-  constructor(
-    private readonly baseUrl: string,
-    private readonly config?: EngineConfig<S, R>,
-  ) {
-    if (config?.delimiter != null) {
-      this._delimiter = config.delimiter;
+  constructor(baseUrl: string, config: EngineConfig<S, R> = {}) {
+    this.#baseUrl = baseUrl;
+    this.#config = config;
+
+    if (config.delimiter != null) {
+      this.#delimiter = config.delimiter;
     }
   }
 
@@ -41,7 +43,7 @@ export class Engine<
     const { port: portValue, unsecureHttp } = options;
 
     if (portValue == null) {
-      const baseUrl = this.getUrlWithProtocol(this.baseUrl, unsecureHttp);
+      const baseUrl = this.getUrlWithProtocol(this.#baseUrl, unsecureHttp);
       return [this.getHref(baseUrl)];
     }
 
@@ -53,7 +55,7 @@ export class Engine<
         .reduce<string[]>(
           (result, port) => [
             ...result,
-            ...this.getUrlWithPort(this.baseUrl, port).filter(
+            ...this.getUrlWithPort(this.#baseUrl, port).filter(
               (url) => !result.includes(url),
             ),
           ],
@@ -164,7 +166,7 @@ export class Engine<
     }
 
     return queryUrls.map((queryUrl) =>
-      this.getHref(queryUrl + keywords.join(this._delimiter)),
+      this.getHref(queryUrl + keywords.join(this.#delimiter)),
     );
   }
 
@@ -290,7 +292,7 @@ export class Engine<
       return queryValue;
     }
 
-    const { search: configSearch } = this.config ?? {};
+    const { search: configSearch } = this.#config;
     if (
       queryValue != null &&
       queryValue instanceof Function &&
@@ -339,9 +341,9 @@ export class Engine<
     if (
       resourceValue != null &&
       resourceValue instanceof Function &&
-      this.config?.resources != null
+      this.#config.resources != null
     ) {
-      const result = returnTypeGuard(resourceValue, this.config.resources);
+      const result = returnTypeGuard(resourceValue, this.#config.resources);
       if (result != null) {
         return Array.isArray(result) ? result : [result];
       }
