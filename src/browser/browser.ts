@@ -12,10 +12,13 @@ export class Browser<
   N extends BrowserName = undefined,
   P extends ProfilesConfig = undefined,
 > {
-  constructor(
-    private readonly browserName?: N,
-    private readonly config?: BrowserConfig<P>,
-  ) {}
+  #browserName?: N;
+  #config?: BrowserConfig<N, P>;
+
+  constructor(browserName?: N, config?: BrowserConfig<N, P>) {
+    this.#browserName = browserName;
+    this.#config = config;
+  }
 
   public async open(
     url?: string | string[] | null,
@@ -23,7 +26,7 @@ export class Browser<
   ) {
     const urls = this.getUrls(url);
 
-    if (this.browserName == null) {
+    if (this.#browserName == null) {
       if (urls.length > 0) {
         await Promise.all(
           urls.map(async (link) => {
@@ -35,7 +38,7 @@ export class Browser<
       return;
     }
 
-    const browserAppName = this.getBrowserAppName(this.browserName);
+    const browserAppName = this.getBrowserAppName(this.#browserName);
 
     if (urls.length > 0) {
       await Promise.all(
@@ -111,7 +114,7 @@ export class Browser<
       return profileValue;
     }
 
-    const { profiles } = this.config ?? {};
+    const { profiles } = this.#config ?? {};
     if (
       profileValue != null &&
       profileValue instanceof Function &&
@@ -140,7 +143,7 @@ export class Browser<
   }
 
   private getBrowserArguments(incognito: boolean, profileDirectory?: string) {
-    const { browserName } = this;
+    const browserName = this.#browserName;
     const browserArguments: string[] = [];
 
     if (profileDirectory != null) {
