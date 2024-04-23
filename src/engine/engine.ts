@@ -188,7 +188,7 @@ export class Engine<
         ...result,
         ...queries.map(
           (query) =>
-            slash.trailing.add(baseUrl) +
+            (baseUrl.endsWith('=') ? baseUrl : slash.trailing.add(baseUrl)) +
             (query.startsWith('?') ? query : slash.leading.remove(query)),
         ),
       ],
