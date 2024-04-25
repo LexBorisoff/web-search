@@ -1,6 +1,6 @@
 {
   "name": "@lexjs/browser-search",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Library for creating and opening browser search queries",
   "type": "module",
   "scripts": {
