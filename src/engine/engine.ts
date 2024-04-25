@@ -1,4 +1,4 @@
-import { patterns } from '../utils/patterns.js';
+import { matchers } from '../matchers/matchers.js';
 import { slash } from '../utils/slash.js';
 import { removeProtocol } from '../utils/remove-protocol.js';
 import { returnTypeGuard } from '../utils/return-type-guard.js';
@@ -215,7 +215,7 @@ export class Engine<
    */
   private getUrlWithProtocol(url: string, unsecureHttp?: boolean): string {
     const protocol = `http${unsecureHttp ? '' : 's'}://`;
-    const hasProtocol = patterns.protocol.test(url);
+    const hasProtocol = matchers.protocol.test(url);
     return hasProtocol && unsecureHttp == null
       ? url
       : `${protocol}${removeProtocol(url)}`;
@@ -229,11 +229,11 @@ export class Engine<
     const noProtocolUrl = removeProtocol(url);
 
     function hasPort() {
-      return patterns.port.test(url);
+      return matchers.port.test(url);
     }
 
     function buildUrl() {
-      const matches = noProtocolUrl.match(patterns.port);
+      const matches = noProtocolUrl.match(matchers.port);
 
       // provided URL includes a port
       if (matches != null) {
