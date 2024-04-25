@@ -12,16 +12,18 @@
   "license": "ISC",
   "exports": {
     ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./matchers": {
-      "default": "./dist/matchers/matchers.js",
-      "types": "./dist/types/matchers/matchers.d.ts"
+      "types": "./dist/types/matchers/index.d.ts",
+      "import": "./dist/matchers/index.js",
+      "default": "./dist/matchers/index.js"
     }
   },
-  "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.js",
   "files": [
     "dist"
   ],
