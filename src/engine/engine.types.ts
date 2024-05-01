@@ -28,7 +28,7 @@ export type QueryGetterFn<S extends SearchConfig> = (
 ) => string | string[];
 
 export type ResourceGetterFn<R extends ResourceConfig> = (
-  resourcesConfig: R,
+  resourcesConfig?: R,
 ) => string | string[];
 
 export interface SharedOptions {

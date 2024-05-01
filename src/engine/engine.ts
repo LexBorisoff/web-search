@@ -338,11 +338,7 @@ export class Engine<
       return resourceValue;
     }
 
-    if (
-      resourceValue != null &&
-      resourceValue instanceof Function &&
-      this.#config.resources != null
-    ) {
+    if (resourceValue != null && resourceValue instanceof Function) {
       const result = returnTypeGuard(resourceValue, this.#config.resources);
       if (result != null) {
         return Array.isArray(result) ? result : [result];
