@@ -24,7 +24,7 @@ export interface EngineConfig<
 }
 
 export type QueryGetterFn<S extends SearchConfig> = (
-  searchConfig: S,
+  searchConfig?: S,
 ) => string | string[];
 
 export type ResourceGetterFn<R extends ResourceConfig> = (

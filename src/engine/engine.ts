@@ -293,11 +293,7 @@ export class Engine<
     }
 
     const { search: configSearch } = this.#config;
-    if (
-      queryValue != null &&
-      queryValue instanceof Function &&
-      configSearch != null
-    ) {
+    if (queryValue != null && queryValue instanceof Function) {
       const result = returnTypeGuard(queryValue, configSearch);
       if (result != null) {
         return Array.isArray(result) ? result : [result];
