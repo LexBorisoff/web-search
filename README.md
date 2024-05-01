@@ -1,4 +1,4 @@
-<h1 align="center">Browser Search</h1>
+<h1 align="center">Web Search</h1>
 
 Browser Search allows to create web searches with various search engines/websites and open them in browsers.
 
@@ -9,7 +9,7 @@ The library is a [pure ESM package](https://gist.github.com/sindresorhus/a39789f
 Install the library locally in your project:
 
 ```bash
-npm i @lexjs/browser-search
+npm i @lexjs/web-search
 ```
 
 # Basic Usage
@@ -17,7 +17,7 @@ npm i @lexjs/browser-search
 ## Browser
 
 ```typescript
-import { Browser } from '@lexjs/browser-search';
+import { Browser } from '@lexjs/web-search';
 
 const chrome = new Browser('chrome');
 
@@ -27,7 +27,7 @@ chrome.open('google.com');
 ## Engine
 
 ```typescript
-import { Engine } from '@lexjs/browser-search';
+import { Engine } from '@lexjs/web-search';
 
 const google = new Engine('google.com', {
   search: 'search?q=',
@@ -46,7 +46,7 @@ console.log(resourceUrls);
 ## Browser and Engine
 
 ```typescript
-import { Engine, Browser } from '@lexjs/browser-search';
+import { Engine, Browser } from '@lexjs/web-search';
 
 const google = new Engine('google.com', {
   search: 'search?q=',
@@ -64,7 +64,7 @@ chrome.open(urls);
 ## Search
 
 ```typescript
-import { Engine, Browser } from '@lexjs/browser-search';
+import { Engine, Browser } from '@lexjs/web-search';
 
 const localhost = new Engine('localhost', {
   delimiter: '+',
@@ -93,7 +93,7 @@ console.log(urls);
 ## Resources
 
 ```typescript
-import { Engine, Browser } from '@lexjs/browser-search';
+import { Engine, Browser } from '@lexjs/web-search';
 
 const github = new Engine('github.com', {
   resources: {
@@ -122,7 +122,7 @@ console.log(urls);
 ## Browser
 
 ```typescript
-import { Engine, Browser } from '@lexjs/browser-search';
+import { Engine, Browser } from '@lexjs/web-search';
 
 const chrome = new Browser('chrome', {
   profiles: {

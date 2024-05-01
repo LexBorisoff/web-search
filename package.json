@@ -1,12 +1,15 @@
 {
-  "name": "@lexjs/browser-search",
-  "version": "0.0.4",
-  "description": "Library for creating and opening browser search queries",
+  "name": "@lexjs/web-search",
+  "version": "0.0.1-beta.2",
+  "description": "Library for creating and opening web search queries",
   "type": "module",
   "scripts": {
     "prebuild": "rm -fr ./dist",
     "build": "tsc",
     "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "Lex Borisoff <lex@borisoff.dev>",
   "license": "ISC",
@@ -46,11 +49,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LexBorisoff/browser-search.git"
+    "url": "git+https://github.com/LexBorisoff/web-search.git"
   },
-  "homepage": "https://github.com/LexBorisoff/browser-search#readme",
+  "homepage": "https://github.com/LexBorisoff/web-search#readme",
   "bugs": {
-    "url": "https://github.com/LexBorisoff/browser-search/issues"
+    "url": "https://github.com/LexBorisoff/web-search/issues"
   },
   "keywords": [
     "search",
