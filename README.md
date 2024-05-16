@@ -1,6 +1,6 @@
 <h1 align="center">Web Search</h1>
 
-Web Search allows to create web searches with various search engines/websites and open them in browsers.
+Web Search allows to create web queries with various search engines or websites and open them in browsers.
 
 The library is a [pure ESM package](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c#pure-esm-package) and does not provide CommonJS exports, which means it cannot be `require`'d. Your project must be ESM or get converted to ESM if it currently uses CommonJS.
 
