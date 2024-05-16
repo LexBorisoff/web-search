@@ -1,6 +1,6 @@
 <h1 align="center">Web Search</h1>
 
-Browser Search allows to create web searches with various search engines/websites and open them in browsers.
+Web Search allows to create web searches with various search engines/websites and open them in browsers.
 
 The library is a [pure ESM package](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c#pure-esm-package) and does not provide CommonJS exports, which means it cannot be `require`'d. Your project must be ESM or get converted to ESM if it currently uses CommonJS.
 
@@ -64,7 +64,7 @@ chrome.open(urls);
 ## Search
 
 ```typescript
-import { Engine, Browser } from '@lexjs/web-search';
+import { Engine } from '@lexjs/web-search';
 
 const localhost = new Engine('localhost', {
   delimiter: '+',
@@ -93,7 +93,7 @@ console.log(urls);
 ## Resources
 
 ```typescript
-import { Engine, Browser } from '@lexjs/web-search';
+import { Engine } from '@lexjs/web-search';
 
 const github = new Engine('github.com', {
   resources: {
@@ -122,7 +122,7 @@ console.log(urls);
 ## Browser
 
 ```typescript
-import { Engine, Browser } from '@lexjs/web-search';
+import { Browser } from '@lexjs/web-search';
 
 const chrome = new Browser('chrome', {
   profiles: {
