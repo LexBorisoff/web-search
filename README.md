@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD029 -->
 # `search-web`
 
 ![Build](https://img.shields.io/github/actions/workflow/status/LexBorisoff/search-web/release.yml)
@@ -296,7 +297,7 @@ Since this is a regular TypeScript project, you are free to organize it however 
 ```typescript
 // not exact representation
 type DefineConfigCallback = ({
-  engine: CreateEngineFn;
+  engine: CreateSiteFn;
   browser: CreateBrowserFn;
 }) => Record<string, Engine | Browser>;
 ```
@@ -315,11 +316,11 @@ defineConfig(({ engine }) => ({
 
 > ⚠️ The property's key name is important because it is used as a value for the `--engine` option and as a custom flag.
 
-The `engine` function is of type `CreateEngineFn`:
+The `engine` function is of type `CreateSiteFn`:
 
 ```typescript
 // not exact representation
-type CreateEngineFn = (baseUrl: string, config?: Config) => Engine;
+type CreateSiteFn = (baseUrl: string, config?: Config) => Engine;
 ```
 
 When defining an engine, you must provide the base URL string as the first argument and, optionally, a config object as the second argument.
@@ -328,14 +329,14 @@ The optional config parameter has the following shape:
 
 ```typescript
 interface Config {
-  search?: string | SearchObject;
+  search?: string | NestedSearchObject;
   resources?: ResourceObject;
   alias?: string | string[];
   delimiter?: string;
   isDefault?: boolean;
 }
 
-interface SearchObject {
+interface NestedSearchObject {
   [key: string]: string | StringObject;
   main: string;
 }

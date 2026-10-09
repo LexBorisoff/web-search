@@ -87,12 +87,6 @@ const args = yargs(hideBin(process.argv))
     description: 'Display the output without opening browser tabs',
     group: group.other,
   })
-  .option(Options.List, {
-    type: types[Options.List],
-    alias: alias.list,
-    description: 'List engines and browsers',
-    group: group.other,
-  })
   .help()
   .version(version)
   .hide('help')

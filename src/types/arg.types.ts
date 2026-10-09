@@ -16,7 +16,6 @@ export interface ArgTypes {
   [Options.Split]: PrimitiveType<(typeof types)[Options.Split]>;
   [Options.Http]: PrimitiveType<(typeof types)[Options.Http]>;
   [Options.Test]: PrimitiveType<(typeof types)[Options.Test]>;
-  [Options.List]: PrimitiveType<(typeof types)[Options.List]>;
 }
 
 export type ArrayArgType<Option extends Options> =

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -93,8 +95,11 @@ async function initializeApp(command: string): Promise<void> {
   });
 
   // install package (link in development)
-  const version = IS_DEV ? '' : getPackageJson().version!;
-  const pkg = version !== '' ? `${PACKAGE_NAME}@${version}` : PACKAGE_NAME;
+  const version = IS_DEV ? '' : getPackageJson().version;
+  const pkg =
+    version != null && version !== ''
+      ? `${PACKAGE_NAME}@${version}`
+      : PACKAGE_NAME;
 
   const npmCommand = IS_DEV ? npmCommands.link : npmCommands.install;
   const useNpm = fsHooks.useHooks(npmHooks);

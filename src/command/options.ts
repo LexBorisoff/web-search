@@ -17,7 +17,6 @@ export enum QueryOptions {
   Split = 'split',
   Http = 'http',
   Test = 'test',
-  List = 'list',
 }
 
 export const queryOptionTypes = {
@@ -32,7 +31,6 @@ export const queryOptionTypes = {
   [QueryOptions.Split]: 'boolean' as const,
   [QueryOptions.Http]: 'boolean' as const,
   [QueryOptions.Test]: 'boolean' as const,
-  [QueryOptions.List]: 'boolean' as const,
 } satisfies Record<QueryOptions, PrimitiveTypeLiteral>;
 
 export const queryAlias: Alias<QueryOptions> = {
@@ -45,7 +43,6 @@ export const queryAlias: Alias<QueryOptions> = {
   port: [':'],
   incognito: ['i'],
   test: ['t'],
-  list: ['l'],
 };
 
 /**
