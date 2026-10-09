@@ -3,8 +3,8 @@ import path from 'node:path';
 import $_ from '@lexjs/prompts';
 import { openApp } from 'open';
 
+import { useCoreActions } from '@actions/core-actions.js';
 import { appData, writeAppData } from '@data/app-data.js';
-import { useCoreHooks } from '@hooks/core.hooks.js';
 import { logger } from '@utils/logger.js';
 import { yamlFiles } from '@utils/yaml-files.js';
 
@@ -25,7 +25,7 @@ function normalizeChoiceArg(arg?: string): ConfigOption | undefined {
   return configOptions.find((option) => arg != null && option.startsWith(arg));
 }
 
-const configDir = useCoreHooks(({ config }) => config);
+const configDir = useCoreActions(({ config }) => config);
 
 export function configFileExists(option: ConfigOption): boolean {
   const configName = CONFIG_FILE(option);
@@ -46,7 +46,7 @@ export function getConfigFilePath(option: ConfigOption): string {
 
 export function createInitialConfig(option: ConfigOption): void {
   const configName = getConfigFileName(option);
-  configDir.fileWrite(
+  configDir.writeFile(
     configName,
     `$schema: ../schema/${option}.json
 

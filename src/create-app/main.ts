@@ -3,14 +3,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { createTree, FileTree } from '@lexjs/filetree';
+import { coreActions } from '@lexjs/filetree/actions';
 import $_ from '@lexjs/prompts';
 import chalk from 'chalk';
-import { createTree, FsHooks } from 'fs-hooks';
-import { coreHooks } from 'fs-hooks/core';
 
+import { useCoreActions } from '@actions/core-actions.js';
+import { npmCommands, npmActions } from '@actions/npm-actions.js';
+import { permissionActions } from '@actions/permission-actions.js';
 import { appData } from '@data/app-data.js';
-import { npmCommands, npmHooks } from '@hooks/npm.hooks.js';
-import { permissionHooks } from '@hooks/permission.hooks.js';
 import { getPackageJson } from '@utils/get-package-json.js';
 import { logger } from '@utils/logger.js';
 
@@ -25,7 +26,6 @@ import {
   PACKAGE_NAME,
   COMMAND_FALLBACK,
 } from '../constants.js';
-import { useCoreHooks } from '../hooks/core.hooks.js';
 
 import { paths } from './paths.js';
 import {
@@ -43,7 +43,7 @@ function isEmpty(str: string | undefined): str is undefined | '' {
 
 async function getCommand(): Promise<string | undefined> {
   let command: string | undefined;
-  const rootDir = useCoreHooks((root) => root);
+  const rootDir = useCoreActions((root) => root);
 
   if (rootDir.exists(DATA_FILE)) {
     command = appData.command;
@@ -79,13 +79,13 @@ async function getCommand(): Promise<string | undefined> {
 }
 
 async function initializeApp(command: string): Promise<void> {
-  const fsHooks = new FsHooks(paths.root, initialTree);
-  createTree(fsHooks);
+  const fileTree = new FileTree(paths.root, initialTree);
+  createTree(fileTree);
 
   // create data and config files
-  const useCore = fsHooks.useHooks(coreHooks);
+  const useCore = fileTree.use(coreActions);
   const rootDir = useCore((root) => root);
-  rootDir.fileCreate(DATA_FILE, JSON.stringify({ ...appData, command }));
+  rootDir.createFile(DATA_FILE, JSON.stringify({ ...appData, command }));
 
   const configOptions: ConfigOption[] = ['browsers', 'sites'];
   configOptions.forEach((option) => {
@@ -102,12 +102,12 @@ async function initializeApp(command: string): Promise<void> {
       : PACKAGE_NAME;
 
   const npmCommand = IS_DEV ? npmCommands.link : npmCommands.install;
-  const useNpm = fsHooks.useHooks(npmHooks);
+  const useNpm = fileTree.use(npmActions);
   await useNpm(({ lib }) => lib)[npmCommand]([pkg]);
 }
 
 function linkDist(): void {
-  const distDir = useCoreHooks(
+  const distDir = useCoreActions(
     ({ lib }) => lib.node_modules[PACKAGE_NAME].dist,
   ).getPath();
 
@@ -119,8 +119,7 @@ function linkDist(): void {
 }
 
 async function createScriptFiles(command: string): Promise<void> {
-  const rootDir = useCoreHooks((root) => root);
-  const binDir = useCoreHooks((root) => root.bin);
+  const [rootDir, binDir] = useCoreActions((root) => [root, root.bin]);
   const scriptNames = { bash: command, powershell: `${command}.ps1` };
   const { bash, powershell } = scriptNames;
 
@@ -133,20 +132,20 @@ async function createScriptFiles(command: string): Promise<void> {
       return fs.statSync(filePath).isFile() && !isCommandFile;
     })
     .forEach((file) => {
-      binDir.fileDelete(file);
+      binDir.deleteFile(file);
     });
 
-  const fsHooks = new FsHooks(paths.root, tree);
-  const usePermissions = fsHooks.useHooks(permissionHooks);
+  const fileTree = new FileTree(paths.root, tree);
+  const usePermissions = fileTree.use(permissionActions);
   const binPermissions = usePermissions(({ bin }) => bin);
 
   // create script files
-  rootDir.fileCreate('start.sh', bashStartScript);
-  binDir.fileCreate(bash, bashScript);
+  rootDir.createFile('start.sh', bashStartScript);
+  binDir.createFile(bash, bashScript);
   await binPermissions.x(bash);
 
   if (IS_WINDOWS) {
-    binDir.fileCreate(powershell, powershellScript);
+    binDir.createFile(powershell, powershellScript);
     await binPermissions.x(bash);
   }
 }

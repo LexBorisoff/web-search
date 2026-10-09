@@ -1,7 +1,7 @@
 import { load } from 'js-yaml';
 
+import { useCoreActions } from '@actions/core-actions.js';
 import { initialSites } from '@data/initial-sites.js';
-import { useCoreHooks } from '@hooks/core.hooks.js';
 import { yamlFiles } from '@utils/yaml-files.js';
 
 import { CONFIG_FILE } from '../constants.js';
@@ -18,13 +18,13 @@ import type {
   SitesData,
 } from '@app-types/config.types.js';
 
-const configDir = useCoreHooks(({ config }) => config);
+const configDir = useCoreActions(({ config }) => config);
 
 function readConfig(option: ConfigOption): string | null {
   const found = yamlFiles(CONFIG_FILE(option)).find((fileName) =>
     configDir.exists(fileName),
   );
-  return found != null ? configDir.fileRead(found) : null;
+  return found != null ? configDir.readFile(found) : null;
 }
 
 const sitesConfigRaw = readConfig('sites');

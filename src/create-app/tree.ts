@@ -10,7 +10,7 @@ import baseSchema from './schema/base.json' with { type: 'json' };
 import browsersSchema from './schema/browsers.json' with { type: 'json' };
 import sitesSchema from './schema/sites.json' with { type: 'json' };
 
-import type { TreeInterface } from 'fs-hooks';
+import type { TreeInterface } from '@lexjs/filetree';
 
 export const initialTree = {
   bin: {},
