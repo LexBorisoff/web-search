@@ -8,41 +8,40 @@ export const yargsOptions = ['_', '$0'];
 export enum QueryOptions {
   Browser = 'browser',
   Profile = 'profile',
-  Engine = 'engine',
-  Search = 'search',
+  Site = 'site',
+  Query = 'query',
   Resource = 'resource',
   Delimiter = 'delimiter',
   Port = 'port',
   Incognito = 'incognito',
   Split = 'split',
   Http = 'http',
-  Test = 'test',
+  DryRun = 'dryrun',
 }
 
 export const queryOptionTypes = {
   [QueryOptions.Browser]: 'string' as const,
   [QueryOptions.Profile]: 'string' as const,
-  [QueryOptions.Engine]: 'string' as const,
-  [QueryOptions.Search]: 'string' as const,
+  [QueryOptions.Site]: 'string' as const,
+  [QueryOptions.Query]: 'string' as const,
   [QueryOptions.Resource]: 'string' as const,
   [QueryOptions.Delimiter]: 'string' as const,
   [QueryOptions.Port]: 'number' as const,
   [QueryOptions.Incognito]: 'boolean' as const,
   [QueryOptions.Split]: 'boolean' as const,
   [QueryOptions.Http]: 'boolean' as const,
-  [QueryOptions.Test]: 'boolean' as const,
+  [QueryOptions.DryRun]: 'boolean' as const,
 } satisfies Record<QueryOptions, PrimitiveTypeLiteral>;
 
 export const queryAlias: Alias<QueryOptions> = {
   browser: ['b'],
   profile: ['p'],
-  engine: ['e'],
-  search: ['s'],
+  site: ['s'],
+  query: ['q'],
   resource: ['r'],
   delimiter: ['d'],
   port: [':'],
   incognito: ['i'],
-  test: ['t'],
 };
 
 /**

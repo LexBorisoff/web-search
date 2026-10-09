@@ -6,14 +6,14 @@ import { capitalize } from '@utils/transform-text.js';
 
 import type { BrowserProfileQuery } from '@app-types/query.types.js';
 
-const { incognito, test } = queryArgs;
+const { incognito, dryrun } = queryArgs;
 
 export function printQuery(
   urls: string[],
   browserQueries: BrowserProfileQuery[],
 ): void {
-  if (test) {
-    logger.warning('[test]');
+  if (dryrun) {
+    logger.warning('[dryrun]');
   }
 
   browserQueries.forEach((browserQuery) => {

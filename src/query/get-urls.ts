@@ -92,17 +92,17 @@ function handleSearchPath(
       : search;
   }
 
-  const { search } = queryArgs;
+  const { query } = queryArgs;
 
-  if (search == null) {
+  if (query == null) {
     return typeof config === 'string' ? config : config.main;
   }
 
-  if (Array.isArray(search)) {
-    return search.map((s) => getQuery(s));
+  if (Array.isArray(query)) {
+    return query.map((s) => getQuery(s));
   }
 
-  return getQuery(search);
+  return getQuery(query);
 }
 
 export function getUrls(
