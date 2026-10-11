@@ -6,7 +6,7 @@ import type { Site } from '@api/site/site.js';
 import type {
   ResourceConfig,
   ResourceObject,
-  SearchPathConfig,
+  QueryPathConfig,
 } from '@api/site/site.types.js';
 
 const { _: args, resource, http } = queryArgs;
@@ -21,7 +21,7 @@ const keywords: string[] = args.filter(
 );
 
 function handleResource(
-  site: Site<SearchPathConfig, ResourceConfig>,
+  site: Site<QueryPathConfig, ResourceConfig>,
   resourceValue: string,
 ): string[] {
   const splitter = '::';
@@ -83,8 +83,8 @@ function handleResource(
   );
 }
 
-function handleSearchPath(
-  config: SearchPathConfig = { main: '/' },
+function handleQueryPath(
+  config: QueryPathConfig = { main: '/' },
 ): string | string[] {
   function getQuery(search: string): string {
     return typeof config !== 'string'
@@ -105,9 +105,7 @@ function handleSearchPath(
   return getQuery(query);
 }
 
-export function getUrls(
-  site: Site<SearchPathConfig, ResourceConfig>,
-): string[] {
+export function getUrls(site: Site<QueryPathConfig, ResourceConfig>): string[] {
   if (resource != null) {
     return Array.isArray(resource)
       ? resource.map((r) => handleResource(site, r)).flat()
@@ -115,7 +113,7 @@ export function getUrls(
   }
 
   return site.search(keywords.join(' '), {
-    searchPath: handleSearchPath,
+    queryPath: handleQueryPath,
     port,
     split: queryArgs.split,
     unsecureHttp: queryArgs.http,

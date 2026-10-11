@@ -3,17 +3,17 @@ import type { SitesData } from '@app-types/config.types.js';
 export const initialSites: NonNullable<SitesData> = {
   google: {
     url: 'google.com',
-    search: 'search?q=',
+    query: 'search?q=',
   },
   duckduckgo: {
     url: 'duckduckgo.com',
-    search: '?q=',
+    query: '?q=',
     delimiter: '+',
     alias: ['duck'],
   },
   github: {
     url: 'github.com',
-    search: 'search?q=',
+    query: 'search?q=',
     resources: {
       tabs: {
         stars: '?tab=stars',
@@ -24,15 +24,15 @@ export const initialSites: NonNullable<SitesData> = {
   },
   mdn: {
     url: 'developer.mozilla.org',
-    search: 'search?q=',
+    query: 'search?q=',
   },
   npm: {
     url: 'npmjs.com',
-    search: 'search?q=',
+    query: 'search?q=',
   },
   youtube: {
     url: 'youtube.com',
-    search: 'results?search_query=',
+    query: 'results?search_query=',
     delimiter: '+',
   },
 };
