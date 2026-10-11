@@ -6,7 +6,7 @@ import { parseData } from './parse-data.js';
 
 import type { PackageJson } from 'type-fest';
 
-export function getPackageJson(): PackageJson {
+export function getPackageInfo(): PackageJson {
   const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
   const root = path.join(__dirname, '../../');
   const json = fs.readFileSync(path.resolve(`${root}/package.json`), 'utf-8');

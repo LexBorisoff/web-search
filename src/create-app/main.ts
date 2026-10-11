@@ -12,7 +12,7 @@ import { useCoreActions } from '@actions/core-actions.js';
 import { npmCommands, npmActions } from '@actions/npm-actions.js';
 import { permissionActions } from '@actions/permission-actions.js';
 import { appData } from '@data/app-data.js';
-import { getPackageJson } from '@utils/get-package-json.js';
+import { getPackageInfo } from '@utils/get-package-info.js';
 import { logger } from '@utils/logger.js';
 
 import {
@@ -78,8 +78,16 @@ async function getCommand(): Promise<string | undefined> {
   return command;
 }
 
+function ensureNamespace(): void {
+  const fileTree = new FileTree(paths.namespace, {});
+  if (!fs.existsSync(paths.namespace)) {
+    createTree(fileTree);
+  }
+}
+
 async function initializeApp(command: string): Promise<void> {
   const fileTree = new FileTree(paths.root, initialTree);
+  ensureNamespace();
   createTree(fileTree);
 
   // create data and config files
@@ -95,7 +103,7 @@ async function initializeApp(command: string): Promise<void> {
   });
 
   // install package (link in development)
-  const version = IS_DEV ? '' : getPackageJson().version;
+  const version = IS_DEV ? '' : getPackageInfo().version;
   const pkg =
     version != null && version !== ''
       ? `${PACKAGE_NAME}@${version}`

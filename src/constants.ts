@@ -1,12 +1,15 @@
 import os from 'node:os';
 
-import { getPackageJson } from '@utils/get-package-json.js';
+import { getPackageInfo } from '@utils/get-package-info.js';
 
 import type { ConfigOption } from '@app-types/config.types.js';
 
 const NODE_ENV = process.env.NODE_ENV;
 
-export const PACKAGE_NAME = getPackageJson().name!;
+export const PACKAGE_NAME = getPackageInfo().name!;
+export const PACKAGE_NAMESPACE = PACKAGE_NAME.split('/')[0].substring(1);
+export const APP_NAME = PACKAGE_NAME.split('/')[1];
+
 export const IS_WINDOWS = os.platform() === 'win32';
 export const IS_DEV = NODE_ENV === 'development' || NODE_ENV === 'dev';
 

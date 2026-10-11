@@ -3,7 +3,7 @@ import { hideBin } from 'yargs/helpers';
 
 import { matchers } from '@api/matchers/matchers.js';
 import { configFlags } from '@config/config-flags.js';
-import { getPackageJson } from '@utils/get-package-json.js';
+import { getPackageInfo } from '@utils/get-package-info.js';
 
 import {
   QueryOptions as Options,
@@ -14,7 +14,7 @@ import {
 
 import type { ArrayArgs } from '@app-types/arg.types.js';
 
-const version = getPackageJson().version!;
+const version = getPackageInfo().version!;
 
 const group = {
   browser: 'Browser Options:',
