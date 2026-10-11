@@ -22,7 +22,7 @@ const group = {
   other: 'Other Options:',
 };
 
-const args = yargs(hideBin(process.argv))
+const parsed = yargs(hideBin(process.argv))
   .option(Options.Browser, {
     type: types[Options.Browser],
     alias: alias.browser,
@@ -85,16 +85,28 @@ const args = yargs(hideBin(process.argv))
   })
   .option(Options.DryRun, {
     type: types[Options.DryRun],
-    alias: alias.dryrun,
+    alias: alias['dry-run'],
     description: 'Display the output without opening browser tabs',
     group: group.other,
+  })
+  .middleware((argv) => {
+    for (const key of Object.keys(argv)) {
+      if (key === 'dry-run' && !('dryrun' in argv)) {
+        argv.dryrun = argv[key];
+      }
+    }
   })
   .help()
   .version(version)
   .hide('help')
   .hide('version')
   .boolean(configFlags.filter((flag) => !options.includes(flag)))
+  .parserConfiguration({
+    'boolean-negation': false,
+  })
   .parseSync();
+
+const args = parsed as typeof parsed & { dryrun?: boolean };
 
 const arrayArgs: ArrayArgs = {
   browser: args.browser,

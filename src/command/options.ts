@@ -16,7 +16,7 @@ export enum QueryOptions {
   Incognito = 'incognito',
   Split = 'split',
   Http = 'http',
-  DryRun = 'dryrun',
+  DryRun = 'dry-run',
 }
 
 export const queryOptionTypes = {
@@ -42,6 +42,7 @@ export const queryAlias: Alias<QueryOptions> = {
   delimiter: ['d'],
   port: [':'],
   incognito: ['i'],
+  'dry-run': ['n'],
 };
 
 /**
@@ -50,6 +51,8 @@ export const queryAlias: Alias<QueryOptions> = {
 export const queryOptions: string[] = [
   ...Object.values(QueryOptions),
   ...Object.values(queryAlias).flat(),
+  'dryRun',
+  'dryrun',
 ];
 
 // CONFIG OPTIONS

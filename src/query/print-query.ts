@@ -13,7 +13,7 @@ export function printQuery(
   browserQueries: BrowserProfileQuery[],
 ): void {
   if (dryrun) {
-    logger.warning('[dryrun]');
+    logger.warning('[no-execute]');
   }
 
   browserQueries.forEach((browserQuery) => {
