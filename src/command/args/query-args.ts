@@ -3,7 +3,6 @@ import { hideBin } from 'yargs/helpers';
 
 import { matchers } from '@api/matchers/matchers.js';
 import { configFlags } from '@config/config-flags.js';
-import { getPackageInfo } from '@utils/get-package-info.js';
 
 import {
   QueryOptions as Options,
@@ -13,8 +12,6 @@ import {
 } from '../options.js';
 
 import type { ArrayArgs } from '@app-types/arg.types.js';
-
-const version = getPackageInfo().version!;
 
 const group = {
   browser: 'Browser Options:',
@@ -97,7 +94,6 @@ const parsed = yargs(hideBin(process.argv))
     }
   })
   .help()
-  .version(version)
   .hide('help')
   .hide('version')
   .boolean(configFlags.filter((flag) => !options.includes(flag)))
