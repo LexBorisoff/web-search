@@ -1,27 +1,27 @@
 import { dataArgs } from '@command/args/data-args.js';
 import { queryArgs, urlArgs } from '@command/args/query-args.js';
-import { findNested } from '@helpers/find/find-nested.js';
+import { findNested } from '@helpers/find-nested.js';
 
+import type { Site } from '@api/site/site.js';
 import type {
-  Engine,
   ResourceConfig,
   ResourceObject,
-  SearchConfig,
-} from '@api/index.js';
+  QueryPathConfig,
+} from '@api/site/site.types.js';
 
 const { _: args, resource, http } = queryArgs;
-const engineArgs = dataArgs.engine();
+const siteArgs = dataArgs.site();
 const portArgs = dataArgs.port();
 const port = portArgs.length === 0 ? undefined : portArgs;
 
-// if there are no engine args and all value args are URLs,
-// remove URL args from keywords list because they are used as engines
+// if there are no site args and all value args are URLs,
+// remove URL args from keywords list because they are used as sites
 const keywords: string[] = args.filter(
-  (keyword) => engineArgs.length > 0 || !urlArgs || !urlArgs.includes(keyword),
+  (keyword) => siteArgs.length > 0 || !urlArgs || !urlArgs.includes(keyword),
 );
 
 function handleResource(
-  engine: Engine<SearchConfig, ResourceConfig>,
+  site: Site<QueryPathConfig, ResourceConfig>,
   resourceValue: string,
 ): string[] {
   const splitter = '::';
@@ -30,7 +30,7 @@ function handleResource(
     return findNested<string>(resources, resourceValue, resourceValue);
   }
 
-  return engine.resource(
+  return site.resource(
     (config = {}) => {
       // NOTE: resource object has a property key containing the splitter
       const foundResourceValue = findResourceByValue(config);
@@ -62,7 +62,7 @@ function handleResource(
                   // do not search in config if path key starts with slash
                   isEscaped
                     ? pathKey.slice(1)
-                    : (findNested<string>(config, pathKey, '') ?? pathKey),
+                    : (findNested<string>(config, pathKey, pathKey) ?? pathKey),
                 );
 
                 return acc;
@@ -83,37 +83,37 @@ function handleResource(
   );
 }
 
-function handleQuery(config: SearchConfig = { main: '/' }): string | string[] {
+function handleQueryPath(
+  config: QueryPathConfig = { main: '/' },
+): string | string[] {
   function getQuery(search: string): string {
     return typeof config !== 'string'
       ? (findNested<string>(config, search, search) ?? search)
       : search;
   }
 
-  const { search } = queryArgs;
+  const { query } = queryArgs;
 
-  if (search == null) {
+  if (query == null) {
     return typeof config === 'string' ? config : config.main;
   }
 
-  if (Array.isArray(search)) {
-    return search.map((s) => getQuery(s));
+  if (Array.isArray(query)) {
+    return query.map((s) => getQuery(s));
   }
 
-  return getQuery(search);
+  return getQuery(query);
 }
 
-export function getUrls(
-  engine: Engine<SearchConfig, ResourceConfig>,
-): string[] {
+export function getUrls(site: Site<QueryPathConfig, ResourceConfig>): string[] {
   if (resource != null) {
     return Array.isArray(resource)
-      ? resource.map((r) => handleResource(engine, r)).flat()
-      : handleResource(engine, resource);
+      ? resource.map((r) => handleResource(site, r)).flat()
+      : handleResource(site, resource);
   }
 
-  return engine.search(keywords.join(' '), {
-    query: handleQuery,
+  return site.search(keywords.join(' '), {
+    queryPath: handleQueryPath,
     port,
     split: queryArgs.split,
     unsecureHttp: queryArgs.http,

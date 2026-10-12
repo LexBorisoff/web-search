@@ -1,19 +1,19 @@
 import open from 'open';
 
 import { queryArgs } from '@command/args/query-args.js';
-import { getQueryProfiles } from '@helpers/browser/get-query-profiles.js';
+import { getQueryProfiles } from '@helpers/get-query-profiles.js';
 
 import { getQueryBrowsers } from './get-query-browsers.js';
 
 import type { BrowserProfileQuery } from '@app-types/query.types.js';
 
-const { test, incognito } = queryArgs;
+const { dryrun, incognito } = queryArgs;
 
 export function openUrls(urls: string[]): BrowserProfileQuery[] {
   const browsers = getQueryBrowsers();
 
   if (browsers.length === 0) {
-    if (!test) {
+    if (!dryrun) {
       Promise.all(
         urls.map((link) => {
           open(link);
@@ -29,7 +29,7 @@ export function openUrls(urls: string[]): BrowserProfileQuery[] {
     profiles: getQueryProfiles(browser).map(([profile]) => profile),
   }));
 
-  if (!test) {
+  if (!dryrun) {
     Promise.all(
       browsers.map(([browserName, browser]) => {
         const browserProfiles = getQueryProfiles(browserName);

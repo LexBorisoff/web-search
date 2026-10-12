@@ -1,16 +1,11 @@
-import { configProfileFlags } from '@data/config-flags.js';
-import { getBrowsersData } from '@data/get-browsers-data.js';
-import { getEnginesData } from '@data/get-engines-data.js';
-import { getProfilesData } from '@data/get-profiles-data.js';
+import { configProfileFlags } from '@config/config-flags.js';
+import { sitesData, browsersData, getProfilesData } from '@data/config-data.js';
 
 import { queryOptions } from '../options.js';
 
 import { queryArgs } from './query-args.js';
 
 import type { WithAlias } from '@app-types/config.types.js';
-
-const browsersData = getBrowsersData();
-const enginesData = getEnginesData();
 
 interface Data<T> {
   [key: string]: T;
@@ -130,14 +125,14 @@ export const dataArgs = {
   },
 
   /**
-   * Returns a unique list of engine args provided to the CLI
+   * Returns a unique list of site args provided to the CLI
    *
    * @param removeEmptyArg
    * If true, removes the empty value from the list
    */
-  engine: function getEngineArgs(removeEmptyArg = true): string[] {
-    const customArgs = getCustomArgs(enginesData);
-    return getUniqueList(queryArgs.engine, customArgs, removeEmptyArg);
+  site: function getSiteArgs(removeEmptyArg = true): string[] {
+    const customArgs = getCustomArgs(sitesData);
+    return getUniqueList(queryArgs.site, customArgs, removeEmptyArg);
   },
 
   /**

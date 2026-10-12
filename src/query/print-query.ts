@@ -1,19 +1,19 @@
 import chalk from 'chalk';
 
 import { queryArgs } from '@command/args/query-args.js';
-import { logger } from '@helpers/utils/logger.js';
-import { capitalize } from '@helpers/utils/transform-text.js';
+import { logger } from '@utils/logger.js';
+import { capitalize } from '@utils/transform-text.js';
 
 import type { BrowserProfileQuery } from '@app-types/query.types.js';
 
-const { incognito, test } = queryArgs;
+const { incognito, dryrun } = queryArgs;
 
 export function printQuery(
   urls: string[],
   browserQueries: BrowserProfileQuery[],
 ): void {
-  if (test) {
-    logger.warning('[test]');
+  if (dryrun) {
+    logger.warning('[no-execute]');
   }
 
   browserQueries.forEach((browserQuery) => {

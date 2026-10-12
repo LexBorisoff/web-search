@@ -1,5 +1,5 @@
 {
-  "name": "search-web",
+  "name": "@lexjs/web",
   "version": "0.0.0-semantically-released",
   "description": "CLI for making browser web searches from the shell",
   "type": "module",
@@ -27,21 +27,14 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LexBorisoff/search-web.git"
+    "url": "git+https://github.com/LexBorisoff/web-search.git"
   },
-  "homepage": "https://github.com/LexBorisoff/search-web/tree/main#readme",
+  "homepage": "https://github.com/LexBorisoff/web-search/tree/main#readme",
   "bugs": {
-    "url": "https://github.com/LexBorisoff/search-web/issues"
-  },
-  "exports": {
-    "./config": {
-      "types": "./dist/types/config/index.d.ts",
-      "import": "./dist/bin/config/index.js",
-      "default": "./dist/bin/config/index.js"
-    }
+    "url": "https://github.com/LexBorisoff/web-search/issues"
   },
   "bin": {
-    "web": "dist/bin/index.js"
+    "create-lexjs-web": "dist/create-app/main.js"
   },
   "keywords": [
     "cli",
@@ -49,6 +42,7 @@
     "websearch",
     "web-search",
     "search-web",
+    "site-search",
     "search-engine",
     "browser-query",
     "web-query",
@@ -57,7 +51,8 @@
     "chrome",
     "firefox",
     "edge",
-    "brave"
+    "brave",
+    "sites"
   ],
   "files": [
     "dist"
@@ -66,10 +61,12 @@
     "node": ">=16.10.0"
   },
   "dependencies": {
-    "@lexjs/prompts": "^1.1.4",
+    "@lexjs/filetree": "^3.0.0",
+    "@lexjs/prompts": "^1.2.1",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.5",
-    "execa": "^8.0.1",
+    "execa": "^9.6.1",
+    "js-yaml": "^5.2.1",
     "open": "^10.2.0",
     "type-fest": "^4.15.0",
     "yargs": "^17.6.2"
@@ -77,9 +74,8 @@
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@lexjs/eslint-plugin": "^1.1.2",
-    "@types/node": "^18.17.6",
-    "@types/prompts": "^2.4.9",
+    "@lexjs/eslint": "^2.0.0",
+    "@types/node": "^24.13.3",
     "@types/yargs": "^17.0.24",
     "conventional-changelog-conventionalcommits": "^8.0.0",
     "globals": "^15.14.0",
@@ -87,6 +83,6 @@
     "rimraf": "^6.0.1",
     "semantic-release": "^25.0.3",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.4.5"
+    "typescript": "^6.0.3"
   }
 }

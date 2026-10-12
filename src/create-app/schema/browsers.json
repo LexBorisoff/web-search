@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Browsers Config",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": {
+    "oneOf": [{ "$ref": "#/$defs/Browser" }, { "type": "null" }]
+  },
+  "$defs": {
+    "Browser": {
+      "description": "Browser config definition",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "type": "boolean",
+          "description": "If true, this browser is considered a default option."
+        },
+        "alias": {
+          "$ref": "base.json#/$defs/alias",
+          "description": "One or more aliases for the browser."
+        },
+        "appPath": {
+          "description": "Path to the browser executable.",
+          "type": "string"
+        },
+        "profiles": {
+          "description": "Profile definitions for this browser.",
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [{ "$ref": "#/$defs/Profile" }, { "type": "string" }]
+          }
+        }
+      }
+    },
+    "Profile": {
+      "description": "Defines a specific user profile for a browser.",
+      "type": "object",
+      "properties": {
+        "directory": {
+          "description": "Name of directory where profile data is stored.",
+          "type": "string"
+        },
+        "default": {
+          "type": "boolean",
+          "description": "If true, this profile is considered a default option."
+        },
+        "alias": {
+          "$ref": "base.json#/$defs/alias",
+          "description": "One or more aliases for the profile."
+        }
+      },
+      "required": ["directory"]
+    }
+  }
+}

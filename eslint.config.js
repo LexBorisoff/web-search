@@ -1,10 +1,11 @@
-import lexjs from '@lexjs/eslint-plugin';
-import { useIgnoreFile } from '@lexjs/eslint-plugin/utils';
+import lexjs from '@lexjs/eslint';
+import { useIgnoreFile } from '@lexjs/eslint/utils';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
-import * as tseslint from 'typescript-eslint';
+import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
-  useIgnoreFile('.gitignore', import.meta),
+export default defineConfig(
+  useIgnoreFile('.gitignore', import.meta, { gitignoreResolution: true }),
   lexjs.configs.recommended,
   lexjs.configs.typescript,
   {

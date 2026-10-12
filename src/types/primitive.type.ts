@@ -1,9 +1,5 @@
 export type PrimitiveTypeLiteral =
-  | 'string'
-  | 'number'
-  | 'bigint'
-  | 'boolean'
-  | 'symbol';
+  'string' | 'number' | 'bigint' | 'boolean' | 'symbol';
 
 export type PrimitiveType<TypeLiteral extends PrimitiveTypeLiteral> =
   TypeLiteral extends 'string'

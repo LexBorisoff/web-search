@@ -2,25 +2,29 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
+    "types": ["node"],
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
-    "outDir": "./dist/bin",
-    "declaration": true,
-    "declarationDir": "./dist/types",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": false,
     "isolatedModules": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noImplicitAny": true,
     "skipLibCheck": true,
     "paths": {
-      "@app-types/*": ["./src/types/*"],
+      "@actions/*": ["./src/actions/*"],
       "@api/*": ["./src/api/*"],
+      "@app-types/*": ["./src/types/*"],
       "@command/*": ["./src/command/*"],
       "@config/*": ["./src/config/*"],
       "@data/*": ["./src/data/*"],
       "@helpers/*": ["./src/helpers/*"],
-      "@query/*": ["./src/query/*"]
+      "@query/*": ["./src/query/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": ["src"]

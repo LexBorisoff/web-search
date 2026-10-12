@@ -1,6 +1,6 @@
-import { findBrowser } from '@helpers/find/find-browser.js';
+import { findBrowser } from '@helpers/find-browser.js';
 
-import type { ProfilesConfig } from '@api/index.js';
+import type { ProfilesConfig } from '@api/browser/browser.types.js';
 
 export function getProfilesConfig(
   browserNameOrAlias: string,
