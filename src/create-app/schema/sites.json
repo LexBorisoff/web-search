@@ -21,9 +21,9 @@
           "type": "string",
           "format": "uri"
         },
-        "search": {
-          "description": "Search path used on the site (e.g., 'search?q=')",
-          "oneOf": [{ "$ref": "#/$defs/SearchObject" }, { "type": "string" }]
+        "query": {
+          "description": "Query path to search the site (e.g., 'search?q=')",
+          "oneOf": [{ "$ref": "#/$defs/QueryObject" }, { "type": "string" }]
         },
         "default": {
           "type": "boolean",
@@ -49,17 +49,17 @@
         }
       }
     },
-    "SearchObject": {
-      "description": "Object describing search path for the site. Supports deep, nested structures.",
+    "QueryObject": {
+      "description": "Object describing query path for the site. Supports deep, nested structures.",
       "type": "object",
       "properties": {
         "main": {
-          "description": "Main search path for the site.",
+          "description": "Main query path for the site.",
           "type": "string"
         }
       },
       "additionalProperties": {
-        "description": "Additional search path for the site.",
+        "description": "Additional query path for the site.",
         "oneOf": [
           { "$ref": "base.json#/$defs/NestedStringObject" },
           { "type": "string" }

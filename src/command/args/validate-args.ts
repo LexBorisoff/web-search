@@ -13,7 +13,7 @@ import { invalidArgs } from './invalid-args.js';
 import { queryArgs, urlArgs } from './query-args.js';
 
 const { italic } = chalk;
-const { resource, search, delimiter } = queryArgs;
+const { resource, query, delimiter } = queryArgs;
 const siteArgs = dataArgs.site(false);
 const browserArgs = dataArgs.browser(false);
 const portArgs = dataArgs.port();
@@ -40,7 +40,7 @@ function noValueError(option: Options): void {
 
 function validateResource(
   value: string | string[],
-  option: Options.Resource | Options.Search,
+  option: Options.Resource | Options.Query,
   allowUrlArgs = true,
 ): void {
   const emptyArg = !Array.isArray(value) && value === '';
@@ -124,7 +124,7 @@ export function validateArgs(): string[] {
   /* ~~~ VALIDATE SITE ARGS ~~~  */
 
   if (isEmptyArg(siteArgs)) {
-    noValueError(Options.Engine);
+    noValueError(Options.Site);
   }
 
   const invalidSites = siteArgs.filter(
@@ -148,8 +148,8 @@ export function validateArgs(): string[] {
 
   /* ~~~ VALIDATE SEARCH ARGS ~~~ */
 
-  if (search != null) {
-    validateResource(search, Options.Search, false);
+  if (query != null) {
+    validateResource(query, Options.Query, false);
   }
 
   /* ~~~ VALIDATE DELIMITER ARGS ~~~ */

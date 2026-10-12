@@ -1,4 +1,4 @@
-import { useCoreHooks } from '@hooks/core.hooks.js';
+import { useCoreActions } from '@actions/core-actions.js';
 
 import { COMMAND_FALLBACK, DATA_FILE } from '../constants.js';
 
@@ -14,7 +14,7 @@ const defaultAppData: AppDataInterface = {
   command: COMMAND_FALLBACK,
 };
 
-const dataFile = useCoreHooks((root) => root[DATA_FILE]);
+const dataFile = useCoreActions((root) => root[DATA_FILE]);
 const dataRaw = dataFile.read();
 
 export const appData = dataRaw != null ? JSON.parse(dataRaw) : defaultAppData;

@@ -7,13 +7,13 @@ import { getQueryBrowsers } from './get-query-browsers.js';
 
 import type { BrowserProfileQuery } from '@app-types/query.types.js';
 
-const { test, incognito } = queryArgs;
+const { dryrun, incognito } = queryArgs;
 
 export function openUrls(urls: string[]): BrowserProfileQuery[] {
   const browsers = getQueryBrowsers();
 
   if (browsers.length === 0) {
-    if (!test) {
+    if (!dryrun) {
       Promise.all(
         urls.map((link) => {
           open(link);
@@ -29,7 +29,7 @@ export function openUrls(urls: string[]): BrowserProfileQuery[] {
     profiles: getQueryProfiles(browser).map(([profile]) => profile),
   }));
 
-  if (!test) {
+  if (!dryrun) {
     Promise.all(
       browsers.map(([browserName, browser]) => {
         const browserProfiles = getQueryProfiles(browserName);

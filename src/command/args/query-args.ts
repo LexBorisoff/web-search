@@ -3,7 +3,7 @@ import { hideBin } from 'yargs/helpers';
 
 import { matchers } from '@api/matchers/matchers.js';
 import { configFlags } from '@config/config-flags.js';
-import { getPackageJson } from '@utils/get-package-json.js';
+import { getPackageInfo } from '@utils/get-package-info.js';
 
 import {
   QueryOptions as Options,
@@ -14,15 +14,15 @@ import {
 
 import type { ArrayArgs } from '@app-types/arg.types.js';
 
-const version = getPackageJson().version!;
+const version = getPackageInfo().version!;
 
 const group = {
   browser: 'Browser Options:',
-  engine: 'Engine Options:',
+  site: 'Site Options:',
   other: 'Other Options:',
 };
 
-const args = yargs(hideBin(process.argv))
+const parsed = yargs(hideBin(process.argv))
   .option(Options.Browser, {
     type: types[Options.Browser],
     alias: alias.browser,
@@ -41,70 +41,78 @@ const args = yargs(hideBin(process.argv))
     description: 'Open in incognito / private mode',
     group: group.browser,
   })
-  .option(Options.Engine, {
-    type: types[Options.Engine],
-    alias: alias.engine,
-    description: 'The search engine (or website) to query',
-    group: group.engine,
+  .option(Options.Site, {
+    type: types[Options.Site],
+    alias: alias.site,
+    description: 'The website to search',
+    group: group.site,
   })
-  .option(Options.Search, {
-    type: types[Options.Search],
-    alias: alias.search,
-    description: "The engine's search path to use for querying",
-    group: group.engine,
+  .option(Options.Query, {
+    type: types[Options.Query],
+    alias: alias.query,
+    description: "The website's query path to use for searching",
+    group: group.site,
   })
   .option(Options.Resource, {
     type: types[Options.Resource],
     alias: alias.resource,
-    description: "The engine's resource to access",
-    group: group.engine,
+    description: "The website's resource to access",
+    group: group.site,
   })
   .option(Options.Delimiter, {
     type: types[Options.Delimiter],
     alias: alias.delimiter,
-    description: "The engine's delimiter to separate query terms",
-    group: group.engine,
+    description: "The website's delimiter to separate search terms",
+    group: group.site,
   })
   .option(Options.Port, {
     type: types[Options.Port],
     alias: alias.port,
     description: 'The port number to add to the URL',
-    group: group.engine,
+    group: group.site,
   })
   .option(Options.Http, {
     type: types[Options.Http],
+    alias: alias.http,
     description: 'Use the HTTP (non-secure) protocol',
-    group: group.engine,
+    group: group.site,
   })
   .option(Options.Split, {
     type: types[Options.Split],
-    description: 'Create a separate web query for each value argument',
+    alias: alias.split,
+    description: 'Create a separate search query for each search term',
     group: group.other,
   })
-  .option(Options.Test, {
-    type: types[Options.Test],
-    alias: alias.test,
+  .option(Options.DryRun, {
+    type: types[Options.DryRun],
+    alias: alias['dry-run'],
     description: 'Display the output without opening browser tabs',
     group: group.other,
   })
-  .option(Options.List, {
-    type: types[Options.List],
-    alias: alias.list,
-    description: 'List engines and browsers',
-    group: group.other,
+  .middleware((argv) => {
+    for (const key of Object.keys(argv)) {
+      if (key === 'dry-run' && !('dryrun' in argv)) {
+        argv.dryrun = argv[key];
+      }
+    }
   })
   .help()
   .version(version)
   .hide('help')
   .hide('version')
   .boolean(configFlags.filter((flag) => !options.includes(flag)))
+  .parserConfiguration({
+    'boolean-negation': false,
+  })
   .parseSync();
+
+const args = parsed as typeof parsed & { dryrun?: boolean };
 
 const arrayArgs: ArrayArgs = {
   browser: args.browser,
   profile: args.profile,
-  engine: args.engine,
-  search: args.search,
+  site: args.site,
+  query: args.query,
   resource: args.resource,
   port: args.port,
 };

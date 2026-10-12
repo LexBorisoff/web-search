@@ -132,7 +132,7 @@ export const dataArgs = {
    */
   site: function getSiteArgs(removeEmptyArg = true): string[] {
     const customArgs = getCustomArgs(sitesData);
-    return getUniqueList(queryArgs.engine, customArgs, removeEmptyArg);
+    return getUniqueList(queryArgs.site, customArgs, removeEmptyArg);
   },
 
   /**

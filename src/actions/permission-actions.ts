@@ -1,9 +1,9 @@
+import { FileTree } from '@lexjs/filetree';
 import { $, ExecaError } from 'execa';
-import { FsHooks } from 'fs-hooks';
 
 import { logger } from '../utils/logger.js';
 
-const dirHooks = FsHooks.dirHooks((targetDir) => ({
+const dirActions = FileTree.dirActions((targetDir) => ({
   async x(fileName) {
     const currentPath = process.cwd();
     process.chdir(targetDir.path);
@@ -20,6 +20,6 @@ const dirHooks = FsHooks.dirHooks((targetDir) => ({
   },
 }));
 
-export const permissionHooks = {
-  dir: dirHooks,
+export const permissionActions = {
+  dir: dirActions,
 } as const;

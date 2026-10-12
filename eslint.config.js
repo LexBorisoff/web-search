@@ -1,5 +1,5 @@
-import lexjs from '@lexjs/eslint-plugin';
-import { useIgnoreFile } from '@lexjs/eslint-plugin/utils';
+import lexjs from '@lexjs/eslint';
+import { useIgnoreFile } from '@lexjs/eslint/utils';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';

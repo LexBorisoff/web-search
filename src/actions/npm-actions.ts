@@ -1,5 +1,5 @@
+import { FileTree } from '@lexjs/filetree';
 import { $, ExecaError } from 'execa';
-import { FsHooks } from 'fs-hooks';
 
 import { logger } from '../utils/logger.js';
 
@@ -8,7 +8,7 @@ export const npmCommands = {
   link: 'link',
 } as const;
 
-const dirHooks = FsHooks.dirHooks((targetDir) => ({
+const dirActions = FileTree.dirActions((targetDir) => ({
   async [npmCommands.install](deps: string[]) {
     const currentDir = process.cwd();
     process.chdir(targetDir.path);
@@ -39,6 +39,6 @@ const dirHooks = FsHooks.dirHooks((targetDir) => ({
   },
 }));
 
-export const npmHooks = {
-  dir: dirHooks,
+export const npmActions = {
+  dir: dirActions,
 } as const;

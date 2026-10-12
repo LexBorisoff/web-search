@@ -2,27 +2,27 @@ interface NestedStringObject {
   [key: string]: string | NestedStringObject;
 }
 
-export interface SearchObject {
+export interface QueryObject {
   [key: string]: string | NestedStringObject;
   main: string;
 }
 
 export type ResourceObject = NestedStringObject;
 
-export type SearchPathConfig = string | SearchObject | undefined;
+export type QueryPathConfig = string | QueryObject | undefined;
 export type ResourceConfig = NestedStringObject | undefined;
 
 export interface SiteConfig<
-  S extends SearchPathConfig,
+  S extends QueryPathConfig,
   R extends ResourceConfig,
 > {
-  search?: S;
+  query?: S;
   resources?: R;
   delimiter?: string;
 }
 
-export type SearchPathGetterFn<S extends SearchPathConfig> = (
-  search?: S,
+export type QueryPathGetterFn<S extends QueryPathConfig> = (
+  query?: S,
 ) => string | string[];
 
 export type ResourceGetterFn<R extends ResourceConfig> = (
@@ -43,15 +43,15 @@ export interface SharedOptions {
   unsecureHttp?: boolean;
 }
 
-export interface SearchMethodOptions<
-  S extends SearchPathConfig,
+export interface QueryMethodOptions<
+  S extends QueryPathConfig,
 > extends SharedOptions {
   /**
    * String that represents a URL segment that's placed before
    * the search keywords and allows to ***search*** the site.
    *
    * - If array is provided, each value creates a separate URL
-   * with keywords provided to that `searchPath`
+   * with keywords provided to that `queryPath`
    *
    * For example, the value for Google is `search?q=`
    * as seen in the following sample URL:
@@ -59,7 +59,7 @@ export interface SearchMethodOptions<
    * `https://google.com/search?q=keywords`
    *
    */
-  searchPath?: string | string[] | SearchPathGetterFn<S>;
+  queryPath?: string | string[] | QueryPathGetterFn<S>;
   /**
    * Creates a separate URL for each keyword in the search query
    */

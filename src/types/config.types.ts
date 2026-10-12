@@ -1,7 +1,7 @@
 import type {
   SiteConfig,
   ResourceConfig,
-  SearchPathConfig,
+  QueryPathConfig,
 } from '@api/site/site.types.js';
 
 export type ConfigOption = 'sites' | 'browsers';
@@ -19,13 +19,13 @@ export interface BaseConfigOptions extends WithAlias, WithDefault {}
 /* ~~~ SITES ~~~ */
 
 export interface ConfigSiteOptions<
-  S extends SearchPathConfig = undefined,
+  S extends QueryPathConfig = undefined,
   R extends ResourceConfig = undefined,
 >
   extends SiteConfig<S, R>, BaseConfigOptions {}
 
 export interface ConfigSite extends ConfigSiteOptions<
-  SearchPathConfig,
+  QueryPathConfig,
   ResourceConfig
 > {
   url: string;

@@ -6,16 +6,16 @@ import { slash } from '../utils/slash.js';
 
 import type {
   SiteConfig,
-  SearchPathConfig,
+  QueryPathConfig,
   ResourceConfig,
-  SearchMethodOptions,
+  QueryMethodOptions,
   ResourceMethodOptions,
-  SearchPathGetterFn,
+  QueryPathGetterFn,
   ResourceGetterFn,
 } from './site.types.js';
 
 export class Site<
-  S extends SearchPathConfig = undefined,
+  S extends QueryPathConfig = undefined,
   R extends ResourceConfig = undefined,
 > {
   #baseUrl: string;
@@ -41,7 +41,7 @@ export class Site<
    * Creates base URLs with a protocol and a port, if provided
    */
   public getBaseUrls(
-    options: Pick<SearchMethodOptions<S>, 'port' | 'unsecureHttp'> = {},
+    options: Pick<QueryMethodOptions<S>, 'port' | 'unsecureHttp'> = {},
   ): string[] {
     const { port: portValue, unsecureHttp } = options;
     const emptyPortsArray = Array.isArray(portValue) && portValue.length === 0;
@@ -79,14 +79,14 @@ export class Site<
    */
   public search(
     searchValue?: string | null,
-    options: SearchMethodOptions<S> = {},
+    options: QueryMethodOptions<S> = {},
   ): string[] {
-    const { searchPath, port, split, unsecureHttp } = options;
+    const { queryPath, port, split, unsecureHttp } = options;
 
     return searchValue == null || searchValue.trim() === ''
       ? this.getBaseUrls({ port, unsecureHttp })
       : this.getSearchUrls(searchValue, {
-          searchPath,
+          queryPath,
           port,
           split,
           unsecureHttp,
@@ -146,15 +146,15 @@ export class Site<
   private getSearchUrls(
     searchValue: string,
     options: Pick<
-      SearchMethodOptions<S>,
-      'searchPath' | 'port' | 'split' | 'unsecureHttp'
+      QueryMethodOptions<S>,
+      'queryPath' | 'port' | 'split' | 'unsecureHttp'
     >,
   ): string[] {
-    const { searchPath, port, split, unsecureHttp } = options;
+    const { queryPath, port, split, unsecureHttp } = options;
 
     const keywords = this.getKeywords(searchValue);
     const urls = this.getSearchPathUrls({
-      searchPath,
+      queryPath,
       port,
       unsecureHttp,
     });
@@ -175,20 +175,17 @@ export class Site<
   }
 
   /**
-   * Creates URLs by adding the `searchPath` property to the site's
+   * Creates URLs by adding the `queryPath` property to the site's
    * base URL that can be used to query search keywords.
    *
    * For example `https://google.com/search?q=`
    */
   private getSearchPathUrls(
-    options: Pick<
-      SearchMethodOptions<S>,
-      'searchPath' | 'port' | 'unsecureHttp'
-    >,
+    options: Pick<QueryMethodOptions<S>, 'queryPath' | 'port' | 'unsecureHttp'>,
   ): string[] {
-    const { searchPath, port, unsecureHttp } = options;
+    const { queryPath, port, unsecureHttp } = options;
     const baseUrls = this.getBaseUrls({ port, unsecureHttp });
-    const searchPaths = this.getSearchPathValues(searchPath);
+    const searchPaths = this.getSearchPathValues(queryPath);
 
     return baseUrls.reduce<string[]>(
       (result, baseUrl) => [
@@ -277,31 +274,31 @@ export class Site<
   }
 
   /**
-   * Returns an array of `searchPath` values provided for the current `search` call
+   * Returns an array of `queryPath` values provided for the current `search` call
    *
-   * - If `searchPath` is not provided or is invalid, defaults to the site's
+   * - If `queryPath` is not provided or is invalid, defaults to the site's
    * main `search` value
    *
    * - If site does not have a main `search` value, default to the
    * site's root (effectively querying the base url)
    */
   private getSearchPathValues(
-    searchPath: string | string[] | SearchPathGetterFn<S> | undefined,
+    queryPath: string | string[] | QueryPathGetterFn<S> | undefined,
   ): string[] {
-    if (typeof searchPath === 'string') {
-      return [searchPath];
+    if (typeof queryPath === 'string') {
+      return [queryPath];
     }
 
     if (
-      Array.isArray(searchPath) &&
-      searchPath.every((sp): sp is string => typeof sp === 'string')
+      Array.isArray(queryPath) &&
+      queryPath.every((sp): sp is string => typeof sp === 'string')
     ) {
-      return searchPath;
+      return queryPath;
     }
 
-    const { search: configSearch } = this.#config;
-    if (searchPath != null && searchPath instanceof Function) {
-      const result = returnTypeGuard(searchPath, configSearch);
+    const { query: configQuery } = this.#config;
+    if (queryPath != null && queryPath instanceof Function) {
+      const result = returnTypeGuard(queryPath, configQuery);
       if (result != null) {
         return Array.isArray(result) ? result : [result];
       }
@@ -311,11 +308,11 @@ export class Site<
     let defaultSearchPath = '/';
 
     // set the default to the site config's main value, if it exists
-    if (configSearch != null) {
-      if (typeof configSearch === 'string') {
-        defaultSearchPath = configSearch;
-      } else if (configSearch instanceof Object && 'main' in configSearch) {
-        defaultSearchPath = configSearch.main;
+    if (configQuery != null) {
+      if (typeof configQuery === 'string') {
+        defaultSearchPath = configQuery;
+      } else if (configQuery instanceof Object && 'main' in configQuery) {
+        defaultSearchPath = configQuery.main;
       }
     }
 

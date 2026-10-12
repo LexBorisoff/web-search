@@ -1,11 +1,15 @@
 import os from 'node:os';
 import path from 'node:path';
 
-import { PACKAGE_NAME } from '../constants.js';
+import { APP_NAME, PACKAGE_NAMESPACE } from '../constants.js';
 
 class Paths {
+  get namespace(): string {
+    return path.join(os.homedir(), `.${PACKAGE_NAMESPACE}`);
+  }
+
   get root(): string {
-    return path.join(os.homedir(), `.${PACKAGE_NAME}`);
+    return path.join(this.namespace, APP_NAME);
   }
 
   get bin(): string {

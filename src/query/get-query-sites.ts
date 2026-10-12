@@ -25,7 +25,7 @@ export function getQuerySites(): QuerySite[] {
       return [
         siteName,
         new Site(site.url, {
-          search: site.search,
+          query: site.query,
           delimiter: site.delimiter,
           resources: site.resources,
         }),
@@ -48,7 +48,7 @@ export function getQuerySites(): QuerySite[] {
     [
       defaultSiteName,
       new Site(defaultSite.url, {
-        search: defaultSite.search,
+        query: defaultSite.query,
         delimiter: defaultSite.delimiter,
         resources: defaultSite.resources,
       }),
