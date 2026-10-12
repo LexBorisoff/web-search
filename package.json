@@ -1,5 +1,5 @@
 {
-  "name": "search-web",
+  "name": "@lexjs/web",
   "version": "0.0.0-semantically-released",
   "description": "CLI for making browser web searches from the shell",
   "type": "module",
@@ -27,14 +27,14 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LexBorisoff/search-web.git"
+    "url": "git+https://github.com/LexBorisoff/web-search.git"
   },
-  "homepage": "https://github.com/LexBorisoff/search-web/tree/main#readme",
+  "homepage": "https://github.com/LexBorisoff/web-search/tree/main#readme",
   "bugs": {
-    "url": "https://github.com/LexBorisoff/search-web/issues"
+    "url": "https://github.com/LexBorisoff/web-search/issues"
   },
   "bin": {
-    "create-search-web": "dist/create-app/main.js"
+    "create-lexjs-web": "dist/create-app/main.js"
   },
   "keywords": [
     "cli",
