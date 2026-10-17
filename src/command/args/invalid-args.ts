@@ -1,3 +1,4 @@
+import { matchers } from '@api/matchers/matchers.js';
 import { configFlags } from '@config/config-flags.js';
 
 import { queryOptions, yargsOptions } from '../options.js';
@@ -11,4 +12,5 @@ import { queryArgs } from './query-args.js';
  */
 export const invalidArgs = Object.keys(queryArgs)
   .filter((key) => !yargsOptions.includes(key))
-  .filter((key) => ![...queryOptions, ...configFlags].includes(key));
+  .filter((key) => ![...queryOptions, ...configFlags].includes(key))
+  .filter((key) => !matchers.flagWithPort.test(key));

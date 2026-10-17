@@ -18,6 +18,7 @@ export interface SiteConfig<
 > {
   query?: S;
   resources?: R;
+  port?: number;
   delimiter?: string;
 }
 

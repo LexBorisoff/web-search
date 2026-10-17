@@ -53,7 +53,7 @@ function validateResource(
   if (siteArgs.length === 0 && (!allowUrlArgs || !urlArgs)) {
     addMessage(
       logger.level.error(
-        `${italic(`--${option}`)} option must be used with --engine${allowUrlArgs ? ' or URL' : ''}`,
+        `${italic(`--${option}`)} option must be used with --site${allowUrlArgs ? ' or URL' : ''}`,
       ),
     );
   }
@@ -129,7 +129,10 @@ export function validateArgs(): string[] {
 
   const invalidSites = siteArgs.filter(
     (arg) =>
-      arg !== '' && !configSiteFlags.includes(arg) && !matchers.url.test(arg),
+      arg !== '' &&
+      !configSiteFlags.includes(arg) &&
+      !matchers.url.test(arg) &&
+      !matchers.flagWithPort.test(arg),
   );
 
   if (invalidSites.length > 0) {
@@ -200,7 +203,7 @@ export function validateArgs(): string[] {
     if (siteArgs.length === 0 && !urlArgs)
       addMessage(
         logger.level.error(
-          `${italic('--port')} option must be used with --engine or URL`,
+          `${italic('--port')} option must be used with --site or URL`,
         ),
       );
   }

@@ -26,6 +26,7 @@ export function getQuerySites(): QuerySite[] {
         siteName,
         new Site(site.url, {
           query: site.query,
+          port: site.port,
           delimiter: site.delimiter,
           resources: site.resources,
         }),

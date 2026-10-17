@@ -40,23 +40,31 @@ function getUniqueList(
   return removeEmptyArg ? uniqueList.filter((arg) => arg !== '') : uniqueList;
 }
 
+type CustomArgsCb = (dataFlags: string[], nameOrAlias: string) => boolean;
+
 /**
  * Returns a list of arg options supplied to the CLI that are
  * specific to config data and do not match standard args
  */
-function getCustomArgs<T extends WithAlias>(data: Data<T>): string[] {
+function getCustomArgs<T extends WithAlias>(
+  data: Data<T>,
+  cb: CustomArgsCb = (dataFlags, nameOrAlias) =>
+    dataFlags.includes(nameOrAlias),
+): string[] {
   const customFlags = Object.keys(queryArgs).filter(
     (key) => !queryOptions.includes(key),
   );
-  return Object.entries(data)
+
+  const dataFlags = Object.entries(data)
     .map(([key, { alias }]) => {
       if (alias != null) {
         return Array.isArray(alias) ? [key, ...alias] : [key, alias];
       }
       return key;
     })
-    .flat()
-    .filter((nameOrAlias) => customFlags.includes(nameOrAlias));
+    .flat();
+
+  return customFlags.filter((nameOrAlias) => cb(dataFlags, nameOrAlias));
 }
 
 export const dataArgs = {
@@ -131,7 +139,14 @@ export const dataArgs = {
    * If true, removes the empty value from the list
    */
   site: function getSiteArgs(removeEmptyArg = true): string[] {
-    const customArgs = getCustomArgs(sitesData);
+    const cb: CustomArgsCb = (dataFlags, nameOrAlias) =>
+      dataFlags.includes(nameOrAlias) ||
+      !!dataFlags.find((flag) =>
+        new RegExp(`^${flag}:\\d+$`).test(nameOrAlias),
+      );
+
+    const customArgs = getCustomArgs(sitesData, cb);
+
     return getUniqueList(queryArgs.site, customArgs, removeEmptyArg);
   },
 
