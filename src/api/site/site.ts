@@ -44,14 +44,15 @@ export class Site<
     options: Pick<QueryMethodOptions<S>, 'port' | 'unsecureHttp'> = {},
   ): string[] {
     const { port: portValue, unsecureHttp } = options;
-    const emptyPortsArray = Array.isArray(portValue) && portValue.length === 0;
+    const sitePort = this.#config.port ?? portValue;
+    const emptyPortsArray = Array.isArray(sitePort) && sitePort.length === 0;
 
-    if (portValue == null || emptyPortsArray) {
+    if (sitePort == null || emptyPortsArray) {
       const baseUrl = this.getUrlWithProtocol(this.#baseUrl, unsecureHttp);
       return [this.getHref(baseUrl)];
     }
 
-    const ports = this.getUniquePorts(portValue);
+    const ports = this.getUniquePorts(sitePort);
 
     return (
       ports

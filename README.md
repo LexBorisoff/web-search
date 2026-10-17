@@ -798,3 +798,21 @@ The following config items are used to create custom flags:
 | site    |  ✅  |      ✅      |          ✅           |
 | browser |  ✅  |      ✅      |          ✅           |
 | profile |  ✅  |      ✅      |          ❌           |
+
+### Custom site flags with ports
+
+You can include a port number with custom site flags by appending it after a colon (`:`).
+
+<pre><code>web <em>--google:3000</em></code></pre>
+
+&gt; `https://google.com:3000`
+
+> ⚠️ This technique does not work with short (1-letter) options
+
+All other ports provided via `--port` (`-:`) will not be applied to that site.
+
+<pre><code>web <em>--google:3000</em> --duck -: 4000 -: 5000</code></pre>
+
+&gt; `https://google.com:3000`  
+&gt; `https://duckduckgo.com:4000`  
+&gt; `https://duckduckgo.com:5000`  
